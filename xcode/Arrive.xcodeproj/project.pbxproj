@@ -18,13 +18,8 @@
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		3B50117DF02B481E98937386 /* KdTree.h in Headers */ = {isa = PBXBuildFile; fileRef = 33694D8DB8A14E1785311C35 /* KdTree.h */; };
-		09A200E04F894462A39B0873 /* HashTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 966C1E2683DD4D7687A9CCEA /* HashTable.h */; };
-		A5BB7CECC2C445F2B29622E0 /* Grid.h in Headers */ = {isa = PBXBuildFile; fileRef = 32E6122A6AD240E4A5C99F86 /* Grid.h */; };
-		27D733678C234153B4803D70 /* Arrive_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 18C437B4420C4077B9CF2E3B /* Arrive_Prefix.pch */; };
-		CC19770B985544D2A23BB322 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95AE04AEAB66471BAA5BA40B /* CinderApp.icns */; };
-		C4D07FD946474B5FBE76359C /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = 01343AB8C9D641E88DCE1EB7 /* Resources.h */; };
 		9DAA0526A72E4CD38F462B66 /* ArriveApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA19AB8B967B469391AC3C9E /* ArriveApp.cpp */; };
+		CC19770B985544D2A23BB322 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95AE04AEAB66471BAA5BA40B /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,19 +32,21 @@
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		01343AB8C9D641E88DCE1EB7 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		18C437B4420C4077B9CF2E3B /* Arrive_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Arrive_Prefix.pch; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		32E6122A6AD240E4A5C99F86 /* Grid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Grid.h; path = ../blocks/SpacePartitioning/include/sp/Grid.h; sourceTree = "<group>"; };
+		33694D8DB8A14E1785311C35 /* KdTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = KdTree.h; path = ../blocks/SpacePartitioning/include/sp/KdTree.h; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* Arrive.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Arrive.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		BA19AB8B967B469391AC3C9E /* ArriveApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/ArriveApp.cpp; sourceTree = "<group>"; name = ArriveApp.cpp; };
-		01343AB8C9D641E88DCE1EB7 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		95AE04AEAB66471BAA5BA40B /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
-		BB761E493FC04FC18E9EC0B1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
-		18C437B4420C4077B9CF2E3B /* Arrive_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Arrive_Prefix.pch; sourceTree = "<group>"; name = Arrive_Prefix.pch; };
-		32E6122A6AD240E4A5C99F86 /* Grid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../blocks/SpacePartitioning/include/sp/Grid.h; sourceTree = "<group>"; name = Grid.h; };
-		966C1E2683DD4D7687A9CCEA /* HashTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../blocks/SpacePartitioning/include/sp/HashTable.h; sourceTree = "<group>"; name = HashTable.h; };
-		33694D8DB8A14E1785311C35 /* KdTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../blocks/SpacePartitioning/include/sp/KdTree.h; sourceTree = "<group>"; name = KdTree.h; };
+		90A3210F1EF40B2400A43C01 /* Vehicle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Vehicle.hpp; path = ../src/Vehicle.hpp; sourceTree = "<group>"; };
+		90A321101EF40D8E00A43C01 /* chUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = chUtils.hpp; path = ../src/chUtils.hpp; sourceTree = "<group>"; };
+		95AE04AEAB66471BAA5BA40B /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		966C1E2683DD4D7687A9CCEA /* HashTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HashTable.h; path = ../blocks/SpacePartitioning/include/sp/HashTable.h; sourceTree = "<group>"; };
+		BA19AB8B967B469391AC3C9E /* ArriveApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = ArriveApp.cpp; path = ../src/ArriveApp.cpp; sourceTree = "<group>"; };
+		BB761E493FC04FC18E9EC0B1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,9 +71,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		01B97315FEAEA392516A2CEA /* Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				B7BAE2213F714CB489E75016 /* SpacePartitioning */,
+			);
+			name = Blocks;
+			sourceTree = "<group>";
+		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				90A321101EF40D8E00A43C01 /* chUtils.hpp */,
+				90A3210F1EF40B2400A43C01 /* Vehicle.hpp */,
 				BA19AB8B967B469391AC3C9E /* ArriveApp.cpp */,
 			);
 			name = Source;
@@ -117,6 +124,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		19C8625D08D64ACA85499C66 /* sp */ = {
+			isa = PBXGroup;
+			children = (
+				32E6122A6AD240E4A5C99F86 /* Grid.h */,
+				966C1E2683DD4D7687A9CCEA /* HashTable.h */,
+				33694D8DB8A14E1785311C35 /* KdTree.h */,
+			);
+			name = sp;
+			sourceTree = "<group>";
+		};
 		29B97314FDCFA39411CA2CEA /* Arrive */ = {
 			isa = PBXGroup;
 			children = (
@@ -128,40 +145,6 @@
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
 			name = Arrive;
-			sourceTree = "<group>";
-		};
-		19C8625D08D64ACA85499C66 /* sp */ = {
-			isa = PBXGroup;
-			children = (
-				32E6122A6AD240E4A5C99F86 /* Grid.h */,
-				966C1E2683DD4D7687A9CCEA /* HashTable.h */,
-				33694D8DB8A14E1785311C35 /* KdTree.h */,
-			);
-			name = sp;
-			sourceTree = "<group>";
-		};
-		68C49B2CE7234696B1936914 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				19C8625D08D64ACA85499C66 /* sp */,
-			);
-			name = include;
-			sourceTree = "<group>";
-		};
-		B7BAE2213F714CB489E75016 /* SpacePartitioning */ = {
-			isa = PBXGroup;
-			children = (
-				68C49B2CE7234696B1936914 /* include */,
-			);
-			name = SpacePartitioning;
-			sourceTree = "<group>";
-		};
-		01B97315FEAEA392516A2CEA /* Blocks */ = {
-			isa = PBXGroup;
-			children = (
-				B7BAE2213F714CB489E75016 /* SpacePartitioning */,
-			);
-			name = Blocks;
 			sourceTree = "<group>";
 		};
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
@@ -191,6 +174,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		68C49B2CE7234696B1936914 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				19C8625D08D64ACA85499C66 /* sp */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		B7BAE2213F714CB489E75016 /* SpacePartitioning */ = {
+			isa = PBXGroup;
+			children = (
+				68C49B2CE7234696B1936914 /* include */,
+			);
+			name = SpacePartitioning;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -217,6 +216,9 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0830;
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Arrive" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -263,17 +265,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Arrive_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Arrive_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -295,12 +297,12 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Arrive_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"NDEBUG=1",
 					"$(inherited)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Arrive_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -317,11 +319,27 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CINDER_PATH = "../../../../Cinder.git";
+				CINDER_PATH = ../../../../Cinder.git;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"\"$(CINDER_PATH)/include\"",
@@ -330,10 +348,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = (
-					"\"$(CINDER_PATH)/include\" ../include",
-					../blocks/SpacePartitioning/include,
-				);
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../blocks/SpacePartitioning/include";
 			};
 			name = Debug;
 		};
@@ -341,10 +356,26 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CINDER_PATH = "../../../../Cinder.git";
+				CINDER_PATH = ../../../../Cinder.git;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"\"$(CINDER_PATH)/include\"",
@@ -352,10 +383,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = (
-					"\"$(CINDER_PATH)/include\" ../include",
-					../blocks/SpacePartitioning/include,
-				);
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../blocks/SpacePartitioning/include";
 			};
 			name = Release;
 		};
