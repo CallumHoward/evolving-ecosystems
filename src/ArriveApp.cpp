@@ -23,7 +23,7 @@ public:
 
 void ArriveApp::setup() {
     mVehicles = vector<Vehicle>{};
-    const int nVehicles = 10;
+    const int nVehicles = 1;
     for (int i = 0; i < nVehicles; ++i) {
         mVehicles.emplace_back(randFloat(getWindowWidth()), randFloat(getWindowHeight()));
     }

@@ -7,6 +7,8 @@
 #include "chUtils.hpp"
 #include "cinder/gl/gl.h"
 #include "cinder/CinderMath.h"
+#include <boost/circular_buffer.hpp>
+#include <range/v3/view.hpp>
 
 using namespace  ci;
 
@@ -16,15 +18,21 @@ public:
         mAcceleration = vec2{0, 0};
         mVelocity = vec2{0, 0};
         mPosition = vec2{x, y};
-        mR = 6.0f;
-        mMaxSpeed = 4.0f;
-        mMaxForce = 0.1f;
+        mR = 12.0f;
+        mMaxSpeed = 10.0f;
+        mMaxForce = 0.8f;
+        mHistorySkip = 0;  // for spread length of tail
+        mHistorySize = 10;
+        mHistory = boost::circular_buffer<vec2>(mHistorySize);
     }
 
     // updates the mPosition
     void update() {
         mVelocity += mAcceleration;   // update the velocity
         ch::limit(mVelocity, mMaxSpeed);
+        if (mHistorySkip % 5 == 0) {
+            mHistory.push_back(mPosition);
+        }
         mPosition += mVelocity;
         mAcceleration = vec2{0, 0};   // reset acceleration to 0 each cycle
     }
@@ -53,27 +61,44 @@ public:
         applyForce(steer);
     }
 
-    void draw() {
+    void draw() const {
+
+        draw_tail();
+
         // rotate in the direction of velocity
         const float theta = ch::heading(mVelocity) + M_PI / 2.0f;
+
+        gl::color(0.2f, 0.8f, 0.2f, 1.f);
 
         gl::pushModelMatrix();
         gl::translate(mPosition);
         gl::rotate(theta);
 
-        PolyLine2f pl;
-        pl.push_back(vec2{0.f, -mR * 2.f});
-        pl.push_back(vec2{-mR, mR * 2.f});
-        pl.push_back(vec2{mR, mR * 2.f});
-        gl::drawSolid(pl);
+        gl::drawSolidCircle(vec2{}, mR);
 
         gl::popModelMatrix();
     }
 
 private:
+
+    void draw_tail() const {
+        // draw tail
+        const float decayIncrement =
+                lmap(1.f, 0.f, static_cast<float>(mHistorySize), 0.f, 1.f);
+        float decay = decayIncrement;
+        for (auto pos : mHistory) {
+            gl::color(0.2f, 0.8f, 0.2f, decay * 0.5f);
+            gl::drawSolidCircle(pos, mR * decay);
+            decay += decayIncrement;
+        }
+    }
+
     vec2 mPosition;
     vec2 mVelocity;
     vec2 mAcceleration;
+    boost::circular_buffer<vec2> mHistory;
+    size_t mHistorySize;
+    size_t mHistorySkip;
     float mR;
     float mMaxForce;
     float mMaxSpeed;
