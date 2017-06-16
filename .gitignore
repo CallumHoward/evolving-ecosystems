@@ -12,6 +12,7 @@
 [Bb]uild/
 [Oo]bj/
 *.o
+*.gch
 [Dd]ebug*/
 [Rr]elease*/
 *.mode*
