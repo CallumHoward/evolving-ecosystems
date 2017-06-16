@@ -23,8 +23,10 @@ public:
 
 void ArriveApp::setup() {
     mVehicles = vector<Vehicle>{};
-    //mVehicles.emplace_back(randFloat(getWindowWidth()), randFloat(getWindowHeight()));
-    mVehicles.emplace_back(getWindowWidth() / 2, getWindowHeight() / 2);
+    const int nVehicles = 10;
+    for (int i = 0; i < nVehicles; ++i) {
+        mVehicles.emplace_back(randFloat(getWindowWidth()), randFloat(getWindowHeight()));
+    }
     mCursor = vec2{getWindowCenter()};
 }
 
