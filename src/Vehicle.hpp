@@ -68,12 +68,12 @@ public:
         // rotate in the direction of velocity
         const float theta = ch::heading(mVelocity) + M_PI / 2.0f;
 
-        gl::color(0.2f, 0.8f, 0.2f, 1.f);
 
         gl::pushModelMatrix();
         gl::translate(mPosition);
         gl::rotate(theta);
 
+        gl::color(0.2f, 0.8f, 0.2f, 1.f);
         gl::drawSolidCircle(vec2{}, mR);
 
         gl::popModelMatrix();
@@ -86,7 +86,7 @@ private:
         const float decayIncrement =
                 lmap(1.f, 0.f, static_cast<float>(mHistorySize), 0.f, 1.f);
         float decay = decayIncrement;
-        for (auto pos : mHistory) {
+        for (const auto& pos : mHistory) {
             gl::color(0.2f, 0.8f, 0.2f, decay * 0.5f);
             gl::drawSolidCircle(pos, mR * decay);
             decay += decayIncrement;
