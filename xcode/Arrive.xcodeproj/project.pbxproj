@@ -41,6 +41,8 @@
 		33694D8DB8A14E1785311C35 /* KdTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = KdTree.h; path = ../blocks/SpacePartitioning/include/sp/KdTree.h; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* Arrive.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Arrive.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		906DF3921EF56B6A0097E626 /* Circle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Circle.hpp; path = ../src/Circle.hpp; sourceTree = "<group>"; };
+		906DF3931EF56B6A0097E626 /* Ecosystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Ecosystem.hpp; path = ../src/Ecosystem.hpp; sourceTree = "<group>"; };
 		90A3210F1EF40B2400A43C01 /* Vehicle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Vehicle.hpp; path = ../src/Vehicle.hpp; sourceTree = "<group>"; };
 		90A321101EF40D8E00A43C01 /* chUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = chUtils.hpp; path = ../src/chUtils.hpp; sourceTree = "<group>"; };
 		95AE04AEAB66471BAA5BA40B /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
@@ -83,6 +85,8 @@
 			isa = PBXGroup;
 			children = (
 				90A321101EF40D8E00A43C01 /* chUtils.hpp */,
+				906DF3921EF56B6A0097E626 /* Circle.hpp */,
+				906DF3931EF56B6A0097E626 /* Ecosystem.hpp */,
 				90A3210F1EF40B2400A43C01 /* Vehicle.hpp */,
 				BA19AB8B967B469391AC3C9E /* ArriveApp.cpp */,
 			);
