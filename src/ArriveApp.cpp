@@ -80,19 +80,19 @@ void ArriveApp::draw() {
     gl::color(0.f, 0.f, 0.5f, 0.2f);
     gl::drawSolidCircle(mCursor, 100.0f);
 
-    gl::pushModelMatrix();
+    {
+        gl::ScopedModelMatrix modelMatrix;
 
-    // move origin to the center of the window for zooming
-    gl::translate(+getWindowCenter());
-    gl::scale(mZoom, mZoom);
-    gl::translate(-getWindowCenter());
+        // move origin to the center of the window for zooming
+        gl::translate(+getWindowCenter());
+        gl::scale(mZoom, mZoom);
+        gl::translate(-getWindowCenter());
 
-    // apply translational offset
-    gl::translate(-mOffset);
+        // apply translational offset
+        gl::translate(-mOffset);
 
-    mEcosystem.draw();
-
-    gl::popModelMatrix();
+        mEcosystem.draw();
+    }
 
     //mFramerate = getAverageFps();
     //mParams.draw();

@@ -66,14 +66,12 @@ void Vehicle::draw() const {
     // rotate in the direction of velocity
     const float theta = ch::heading(mVelocity) + M_PI / 2.0f;
 
-    gl::pushModelMatrix();
+    gl::ScopedModelMatrix modelMatrix;
     gl::translate(mPosition);
     gl::rotate(theta);
 
     gl::color(0.2f, 0.8f, 0.2f, 1.f);
     gl::drawSolidCircle(vec2{}, mR);
-
-    gl::popModelMatrix();
 }
 
 // calculates a steering force towards a target
