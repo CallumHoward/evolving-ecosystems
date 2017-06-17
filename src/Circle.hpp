@@ -12,7 +12,7 @@ using namespace ci::app;
 
 class Circle {
 public:
-    Circle(float radius, const vec2 &center)
+    Circle(float radius = 0.0f, const vec2 &center = vec2{})
             : radius_{radius}, center_{center} {}
 
     void draw() const;

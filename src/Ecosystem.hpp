@@ -19,8 +19,8 @@ using namespace ranges;
 class Ecosystem {
 public:
     void setup();
-    void update();
-    void draw(const vec2& arrivePoint);
+    void update(const vec2& arrivePoint);
+    void draw();
 
 private:
     int mNumFood = 50;
@@ -29,19 +29,25 @@ private:
     std::vector<Vehicle> mVehicles;
 };
 
+
 void Ecosystem::setup() {
+    mFood = std::vector<Circle>(mNumFood);
+    generate(mFood, []{ return Circle{3.0f, makeRandPoint()}; });
+
     mVehicles = std::vector<Vehicle>(mNumVehicles);
     generate(mVehicles, []{ return Vehicle{makeRandPoint()}; });
 }
 
-void Ecosystem::update() {}
-
-void Ecosystem::draw(const vec2& arrivePoint) {
+void Ecosystem::update(const vec2& arrivePoint) {
     for (auto& vehicle : mVehicles) {
         vehicle.arrive(arrivePoint);
         vehicle.update();
-        vehicle.draw();
     }
+}
+
+void Ecosystem::draw() {
+    for (auto& vehicle : mVehicles) { vehicle.draw(); }
+    for (auto& food : mFood) { food.draw(); }
 }
 
 }
