@@ -4,6 +4,7 @@
 #ifndef ECOSYSTEM_HPP
 #define ECOSYSTEM_HPP
 
+#include <algorithm>
 #include <vector>
 #include <range/v3/algorithm.hpp>
 #include "cinder/gl/gl.h"
@@ -56,7 +57,14 @@ void Ecosystem::update(const vec2& arrivePoint) {
     //}
 
     for (auto& vehicle : mVehicles) {
-        const auto nn = mParticleSpatialStruct.nearestNeighborSearch(vehicle.getPosition());
+        float distanceSquared;
+        auto nn = mParticleSpatialStruct.nearestNeighborSearch(vehicle.getPosition(), &distanceSquared);
+        Circle* nearestFoodRef = static_cast<Circle *>(nn->getData());
+        
+        if (distanceSquared < 6.0f * 6.0f) {  //TODO don't hardcode Vehicle size
+            *nearestFoodRef = Circle{3.0f, makeRandPoint()};  // eat food
+        }
+        
         vehicle.arrive(nn->getPosition());
         vehicle.update();
     }

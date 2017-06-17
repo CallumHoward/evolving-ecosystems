@@ -12,6 +12,7 @@ using namespace std;
 class ArriveApp : public App {
 public:
     void setup() override;
+    static void prepareSettings(ArriveApp::Settings *settings);
     void mouseDown(MouseEvent event) override;
     void mouseDrag(MouseEvent event) override;
     void mouseWheel(MouseEvent event) override;
@@ -40,7 +41,7 @@ private:
     ch::Ecosystem mEcosystem;
 };
 
-void ArriveApp::setup() {
+ void ArriveApp::setup() {
     // viewport parameters setup
     mOffset = vec2{};
     mCursor = vec2{getWindowCenter()};
@@ -55,6 +56,11 @@ void ArriveApp::setup() {
     mParams.addParam("framerate", &mFramerate, "");
 
     mEcosystem.setup();
+}
+
+void ArriveApp::prepareSettings(ArriveApp::Settings *settings) {
+    settings->setWindowSize(1340, 800);
+    settings->setHighDensityDisplayEnabled();
 }
 
 void ArriveApp::mouseDown(MouseEvent event) { mLastPos = event.getPos(); }
@@ -78,7 +84,7 @@ void ArriveApp::draw() {
 
     // draw cursor (don't translate)
     gl::color(0.f, 0.f, 0.5f, 0.2f);
-    gl::drawSolidCircle(mCursor, 100.0f);
+    //gl::drawSolidCircle(mCursor, 100.0f);
 
     {
         gl::ScopedModelMatrix modelMatrix;
@@ -98,4 +104,4 @@ void ArriveApp::draw() {
     //mParams.draw();
 }
 
-CINDER_APP(ArriveApp, RendererGl)
+CINDER_APP(ArriveApp, RendererGl, &ArriveApp::prepareSettings)
