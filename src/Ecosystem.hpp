@@ -7,6 +7,7 @@
 #include <vector>
 #include <range/v3/algorithm.hpp>
 #include "cinder/gl/gl.h"
+#include "sp/Grid.h"
 #include "chUtils.hpp"
 #include "Circle.hpp"
 #include "Vehicle.hpp"
@@ -27,6 +28,10 @@ private:
     int mNumVehicles = 50;
     std::vector<Circle> mFood;
     std::vector<Vehicle> mVehicles;
+
+    using SpatialStruct = sp::Grid2<Particle*>;
+
+    SpatialStruct mParticleSpatialStruct;
 };
 
 
@@ -36,11 +41,23 @@ void Ecosystem::setup() {
 
     mVehicles = std::vector<Vehicle>(mNumVehicles);
     generate(mVehicles, []{ return Vehicle{makeRandPoint()}; });
+
+    mParticleSpatialStruct = SpatialStruct{};
 }
 
 void Ecosystem::update(const vec2& arrivePoint) {
+    // update the grid
+    mParticleSpatialStruct.clear();
+    for (auto& particle : mFood) {
+        mParticleSpatialStruct.insert(particle.getPosition(), &particle);
+    }
+    //for (auto& particle : mVehicles) {
+    //    mParticleSpatialStruct.insert(particle.getPosition(), &particle);
+    //}
+
     for (auto& vehicle : mVehicles) {
-        vehicle.arrive(arrivePoint);
+        const auto nn = mParticleSpatialStruct.nearestNeighborSearch(vehicle.getPosition());
+        vehicle.arrive(nn->getPosition());
         vehicle.update();
     }
 }

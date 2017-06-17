@@ -4,22 +4,24 @@
 #ifndef VEHICLE_HPP
 #define VEHICLE_HPP
 
+#include <boost/circular_buffer.hpp>
+#include <range/v3/view.hpp>
 #include "chUtils.hpp"
 #include "cinder/gl/gl.h"
 #include "cinder/CinderMath.h"
-#include <boost/circular_buffer.hpp>
-#include <range/v3/view.hpp>
+#include "Particle.hpp"
+
+namespace ch {
 
 using namespace  ci;
 
-class Vehicle {
+class Vehicle : public Particle {
 public:
     Vehicle(float x, float y) : Vehicle{vec2{x, y}} {}
     Vehicle(const vec2& point = vec2{}) :
+        Particle{6.0f, point},
         mAcceleration{0, 0},
         mVelocity{0, 0},
-        mPosition{point},
-        mR{6.0f},
         mMaxSpeed{40.0f},
         mMaxForce{0.8f},
         mHistorySkip{0},  // for spread length of tail
@@ -27,8 +29,8 @@ public:
             mHistory = boost::circular_buffer<vec2>{mHistorySize};
     }
 
-    void update();  // updates the position of the vehicle
-    void draw() const;
+    void update() override;  // updates the position of the vehicle
+    void draw() const override;
 
     void arrive(const vec2& target);
 
@@ -38,13 +40,11 @@ public:
 private:
     void draw_tail() const;
 
-    vec2 mPosition;
     vec2 mVelocity;
     vec2 mAcceleration;
     boost::circular_buffer<vec2> mHistory;
     size_t mHistorySize;
     size_t mHistorySkip;
-    float mR;
     float mMaxForce;
     float mMaxSpeed;
 };
@@ -54,9 +54,9 @@ void Vehicle::update() {
     mVelocity += mAcceleration;   // update the velocity
     ch::limit(mVelocity, mMaxSpeed);
     if (mHistorySkip % 5 == 0) {
-        mHistory.push_back(mPosition);
+        mHistory.push_back(bPosition);
     }
-    mPosition += mVelocity;
+    bPosition += mVelocity;
     mAcceleration = vec2{0, 0};   // reset acceleration to 0 each cycle
 }
 
@@ -67,16 +67,16 @@ void Vehicle::draw() const {
     const float theta = ch::heading(mVelocity) + M_PI / 2.0f;
 
     gl::ScopedModelMatrix modelMatrix;
-    gl::translate(mPosition);
+    gl::translate(bPosition);
     gl::rotate(theta);
 
     gl::color(0.2f, 0.8f, 0.2f, 1.f);
-    gl::drawSolidCircle(vec2{}, mR);
+    gl::drawSolidCircle(vec2{}, bSize);
 }
 
 // calculates a steering force towards a target
 void Vehicle::arrive(const vec2& target) {
-    vec2 desired = target - mPosition;
+    vec2 desired = target - bPosition;
     const float d = length(desired);
 
     // scale within arbitrary damping within 100 pixels so that it arrives
@@ -100,9 +100,11 @@ void Vehicle::draw_tail() const {
     float decay = decayIncrement;
     for (const auto& pos : mHistory) {
         gl::color(0.2f, 0.8f, 0.2f, decay * 0.5f);
-        gl::drawSolidCircle(pos, mR * decay);
+        gl::drawSolidCircle(pos, bSize * decay);
         decay += decayIncrement;
     }
+}
+
 }
 
 #endif
