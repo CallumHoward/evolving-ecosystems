@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/params/Params.h"
 
 #include "Ecosystem.hpp"
 
@@ -19,7 +20,7 @@ public:
     void draw() override;
 
 private:
-    void zoomAdd(float amount) {
+    void zoomChange(float amount) {
         mZoom = constrain(mZoom + amount, mZoomMin, mZoomMax);
     };
 
@@ -31,6 +32,10 @@ private:
     float mZoomMax;
     float mZoomMin;
     float mZoomAmount;
+
+    // debug gui
+    float mFramerate;
+    params::InterfaceGl mParams;
 
     ch::Ecosystem mEcosystem;
 };
@@ -44,6 +49,11 @@ void ArriveApp::setup() {
     mZoomMin = 1.0f;
     mZoomAmount = 0.2f;
 
+    // debug gui setup
+    const auto windowCaption = "Parameters";
+    mParams = params::InterfaceGl(windowCaption, ivec2{100, 200});
+    mParams.addParam("framerate", &mFramerate, "");
+
     mEcosystem.setup();
 }
 
@@ -56,7 +66,7 @@ void ArriveApp::mouseDrag(MouseEvent event) {
 }
 
 void ArriveApp::mouseWheel(MouseEvent event) {
-    zoomAdd(event.getWheelIncrement());
+    zoomChange(event.getWheelIncrement());
 }
 
 void ArriveApp::mouseMove(MouseEvent event) { mCursor = event.getPos(); }
@@ -83,6 +93,9 @@ void ArriveApp::draw() {
     mEcosystem.draw();
 
     gl::popModelMatrix();
+
+    //mFramerate = getAverageFps();
+    //mParams.draw();
 }
 
 CINDER_APP(ArriveApp, RendererGl)
