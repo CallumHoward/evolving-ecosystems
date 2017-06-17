@@ -14,12 +14,13 @@ using namespace  ci;
 
 class Vehicle {
 public:
-    Vehicle(float x, float y) {
+    Vehicle(float x, float y) : Vehicle{vec2{x, y}} {}
+    Vehicle(const vec2& point = vec2{}) {
         mAcceleration = vec2{0, 0};
         mVelocity = vec2{0, 0};
-        mPosition = vec2{x, y};
-        mR = 12.0f;
-        mMaxSpeed = 10.0f;
+        mPosition = point;
+        mR = 6.0f;
+        mMaxSpeed = 40.0f;
         mMaxForce = 0.8f;
         mHistorySkip = 0;  // for spread length of tail
         mHistorySize = 10;
@@ -67,7 +68,6 @@ public:
 
         // rotate in the direction of velocity
         const float theta = ch::heading(mVelocity) + M_PI / 2.0f;
-
 
         gl::pushModelMatrix();
         gl::translate(mPosition);

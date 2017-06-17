@@ -11,10 +11,12 @@
 
 #include "cinder/gl/gl.h"
 #include "cinder/CinderMath.h"
-
+#include "cinder/Rand.h"
+#include "Cinder/app/App.h"
 
 namespace ch {
     using namespace ci;
+    using namespace ci::app;
 
     // prototypes
     void setMagnitude(vec2& v, float len);
@@ -45,6 +47,11 @@ namespace ch {
     }
 
     void setMagnitude(vec2& v, float len) { v = safeNormalize(v) * len; }
+    
+    inline vec2 makeRandPoint() {
+        return vec2{randFloat(getWindowWidth()), randFloat(getWindowHeight())};
+    }
+
 }
 
 #endif /* chUtils_h */

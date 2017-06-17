@@ -1,9 +1,8 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/Rand.h"
 
-#include "Vehicle.hpp"
+#include "Ecosystem.hpp"
 
 using namespace ci;
 using namespace ci::app;
@@ -33,7 +32,7 @@ private:
     float mZoomMin;
     float mZoomAmount;
 
-    std::vector<Vehicle> mVehicles;
+    ch::Ecosystem mEcosystem;
 };
 
 void ArriveApp::setup() {
@@ -45,12 +44,7 @@ void ArriveApp::setup() {
     mZoomMin = 1.0f;
     mZoomAmount = 0.2f;
 
-    mVehicles = vector<Vehicle>{};
-    const int nVehicles = 1;
-    for (int i = 0; i < nVehicles; ++i) {
-        mVehicles.emplace_back(
-                randFloat(getWindowWidth()), randFloat(getWindowHeight()));
-    }
+    mEcosystem.setup();
 }
 
 void ArriveApp::mouseDown(MouseEvent event) { mLastPos = event.getPos(); }
@@ -86,11 +80,7 @@ void ArriveApp::draw() {
     // apply translational offset
     gl::translate(-mOffset);
 
-    for (auto& vehicle : mVehicles) {
-        vehicle.arrive(mCursor + mOffset);
-        vehicle.update();
-        vehicle.draw();
-    }
+    mEcosystem.draw(mCursor + mOffset);
 
     gl::popModelMatrix();
 }
