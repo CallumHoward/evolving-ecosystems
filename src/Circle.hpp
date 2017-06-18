@@ -22,10 +22,12 @@ public:
             : Particle{size, position}, mType{t}, mActive{true} {
         switch (mType) {
         case FOOD:
+            mEnergy = 25.0f;
             mFill = ColorA{0.0f, 0.5f, 0.7f, 0.3};
             mOutline = ColorA{0.1f, 0.6f, 0.8f, 0.8};
             break;
         case CORPSE:
+            mEnergy = 50.0f;
             mFill = ColorA{0.7f, 0.2f, 0.3f, 0.1};
             mOutline = ColorA{0.8f, 0.3f, 0.4f, 0.5};
             break;
@@ -49,7 +51,7 @@ private:
     bool mActive;
     CType mType;
     Color mFill, mOutline;
-    constexpr static const float mEnergy = 25.0f;
+    float mEnergy;
 };
 
 

@@ -8,12 +8,17 @@
 #include <range/v3/view.hpp>
 #include "chUtils.hpp"
 #include "cinder/gl/gl.h"
+#include "cinder/Timeline.h"
 #include "cinder/CinderMath.h"
 #include "Particle.hpp"
 
 namespace ch {
 
 using namespace  ci;
+
+const Color sGreen = Color{0.1f, 0.4f, 0.1f};
+const Color sBright = Color{0.4f, 0.9f, 0.4f};
+
 
 class Vehicle : public Particle {
 public:
@@ -25,9 +30,10 @@ public:
         mMaxForce{0.8f},
         mMaxSpeed{40.0f},
         mMaxEnergy{100.0f},
-        mEnergy{50.0f},
         mHistorySkip{0},  // for spread length of tail
         mHistorySize{10} {
+            mColor = sGreen;
+            mEnergy = randFloat(mMaxEnergy / 4.0f, mMaxEnergy / 2.0f);
             mHistory = boost::circular_buffer<vec2>{mHistorySize};
     }
 
@@ -35,7 +41,7 @@ public:
     void draw() const override;
 
     void arrive(const vec2& target);
-    void eat(float energy) { mEnergy = constrain(mEnergy + energy, 0.0f, mMaxEnergy); }
+    void eat(float energy);
     bool isDead() { return mEnergy <= 0.0f; }
 
     // we could add mass here if we want A = F / M
@@ -44,6 +50,7 @@ public:
 private:
     void draw_tail() const;
 
+    Anim<Color> mColor;
     vec2 mVelocity;
     vec2 mAcceleration;
     float mEnergy;
@@ -81,10 +88,14 @@ void Vehicle::draw() const {
 
     const float vitality = lmap(mEnergy, 0.0f, mMaxEnergy, 0.3f, 1.0f);
 
-    gl::color(0.1f, 0.4f, 0.1f, vitality);
+    gl::color(ColorA{mColor.value(), vitality});
     gl::drawSolidCircle(vec2{}, bSize * vitality * 2.0f);
-    //gl::color(0.2f, 0.8f, 0.2f, 1.f);
-    //gl::drawStrokedCircle(vec2{}, bSize, 1.0f);
+}
+
+void Vehicle::eat(float energy) {
+    mEnergy = constrain(mEnergy + energy, 0.0f, mMaxEnergy);
+    mColor = sBright;
+    timeline().apply(&mColor, sGreen, 1.0f, EaseOutAtan());
 }
 
 // calculates a steering force towards a target
