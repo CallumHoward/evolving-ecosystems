@@ -22,12 +22,6 @@ public:
     float getSize() const { return bSize; }
 
 protected:
-    bool operator==(const Particle& p) const {
-        return bPosition == p.bPosition and bSize == p.bSize;
-    }
-
-    bool operator!=(const Particle& p) const { return not (*this == p); }
-
     vec2 bPosition;
     float bSize;
 };

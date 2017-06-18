@@ -19,7 +19,7 @@ public:
     };
 
     Circle(float size = 0.0f, const vec2& position = vec2{}, const CType t = FOOD)
-            : Particle{size, position}, mType{t} {
+            : Particle{size, position}, mType{t}, mActive{true} {
         switch (mType) {
         case FOOD:
             mFill = ColorA{0.0f, 0.5f, 0.7f, 0.3};
@@ -38,12 +38,15 @@ public:
     void setRadius(float radius) { bSize = radius; }
     void setCenter(vec2 center) { bPosition = center; }
 
-    inline bool within(const Area& a) const { return a.contains(bPosition); }
+    bool within(const Area& a) const { return a.contains(bPosition); }
 
     CType getType() { return mType; }
     constexpr float getEnergy() const { return mEnergy; }
+    bool isActive() const { return mActive; }
+    void setActive(bool b) { mActive = b; }
 
 private:
+    bool mActive;
     CType mType;
     Color mFill, mOutline;
     constexpr static const float mEnergy = 25.0f;
@@ -53,6 +56,7 @@ private:
 void Circle::update() {}
 
 void Circle::draw() const {
+    if (not mActive) { return; }
     gl::color(mFill);
     gl::drawSolidCircle(bPosition, bSize);
     gl::color(mOutline);

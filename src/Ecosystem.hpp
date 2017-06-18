@@ -8,8 +8,10 @@
 #include <vector>
 #include <iterator>
 #include <range/v3/algorithm.hpp>
+#include <boost/circular_buffer.hpp>
 #include "cinder/gl/gl.h"
 #include "sp/Grid.h"
+#include "sp/KdTree.h"
 #include "chUtils.hpp"
 #include "Circle.hpp"
 #include "Vehicle.hpp"
@@ -30,10 +32,11 @@ private:
     int mMaxNumFood = 30;
     int mNumVehicles = 50;
     std::vector<Circle> mFood;
-    std::vector<Circle> mCorpses;
     std::vector<Vehicle> mVehicles;
+    boost::circular_buffer<Circle> mCorpses;
 
-    using SpatialStruct = sp::Grid2<Particle*>;
+    //using SpatialStruct = sp::Grid2<Particle*>;
+    using SpatialStruct = sp::KdTree2<Particle*>;
 
     SpatialStruct mParticleSpatialStruct;
 };
@@ -46,20 +49,26 @@ void Ecosystem::setup() {
     mVehicles = std::vector<Vehicle>(mNumVehicles);
     generate(mVehicles, []{ return Vehicle{makeRandPoint()}; });
 
+    mCorpses = boost::circular_buffer<Circle>{30};
     mParticleSpatialStruct = SpatialStruct{};
 }
 
 void Ecosystem::update() {
     // update the grid
     mParticleSpatialStruct.clear();
-    for (auto& particle : view::concat(mFood, mCorpses)) {
+    for (auto& particle : mFood) {
+        mParticleSpatialStruct.insert(particle.getPosition(), &particle);
+    }
+    for (auto& particle : mCorpses) {
+        if (not particle.isActive()) { continue; }
         mParticleSpatialStruct.insert(particle.getPosition(), &particle);
     }
 
     for (auto& vehicle : mVehicles) {
         if (vehicle.isDead()) {
-            mCorpses.emplace_back(5.0f, vehicle.getPosition(), Circle::CORPSE);
+            mCorpses.push_back(Circle{5.0f, vehicle.getPosition(), Circle::CORPSE});
             vehicle = Vehicle{makeRandPoint()};
+            continue;
         }
 
         float distanceSquared;
@@ -74,7 +83,7 @@ void Ecosystem::update() {
                 *nearestFoodRef = Circle{3.0f, makeRandPoint()};
                 break;
             case Circle::CORPSE:
-                mCorpses.erase(std::remove(std::begin(mCorpses), std::end(mCorpses), *nearestFoodRef));
+                nearestFoodRef->setActive(false);
                 break;
             }
         }
