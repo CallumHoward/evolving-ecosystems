@@ -20,10 +20,12 @@ public:
     Vehicle(float x, float y) : Vehicle{vec2{x, y}} {}
     Vehicle(const vec2& point = vec2{}) :
         Particle{6.0f, point},
-        mAcceleration{0, 0},
         mVelocity{0, 0},
-        mMaxSpeed{40.0f},
+        mAcceleration{0, 0},
         mMaxForce{0.8f},
+        mMaxSpeed{40.0f},
+        mMaxEnergy{100.0f},
+        mEnergy{80.0f},
         mHistorySkip{0},  // for spread length of tail
         mHistorySize{10} {
             mHistory = boost::circular_buffer<vec2>{mHistorySize};
@@ -33,6 +35,8 @@ public:
     void draw() const override;
 
     void arrive(const vec2& target);
+    void eat(float energy) { mEnergy = constrain(mEnergy + energy, 0.0f, mMaxEnergy); }
+    bool isDead() { return mEnergy <= 0.0f; }
 
     // we could add mass here if we want A = F / M
     void applyForce(vec2 force) { mAcceleration += force; }
@@ -42,11 +46,13 @@ private:
 
     vec2 mVelocity;
     vec2 mAcceleration;
-    boost::circular_buffer<vec2> mHistory;
-    size_t mHistorySize;
-    size_t mHistorySkip;
+    float mEnergy;
     float mMaxForce;
     float mMaxSpeed;
+    float mMaxEnergy;
+    size_t mHistorySkip;
+    size_t mHistorySize;
+    boost::circular_buffer<vec2> mHistory;
 };
 
 
@@ -58,6 +64,10 @@ void Vehicle::update() {
     }
     bPosition += mVelocity;
     mAcceleration = vec2{0, 0};   // reset acceleration to 0 each cycle
+
+    mEnergy -= 0.5f;                            // as time passes
+    mEnergy -= 0.02f * length(mVelocity);       // sustain speed
+    mEnergy -= 0.1f * length(mAcceleration);    // change speed
 }
 
 void Vehicle::draw() const {
@@ -70,8 +80,12 @@ void Vehicle::draw() const {
     gl::translate(bPosition);
     gl::rotate(theta);
 
-    gl::color(0.2f, 0.8f, 0.2f, 1.f);
-    gl::drawSolidCircle(vec2{}, bSize);
+    const float vitality = lmap(mEnergy, 0.0f, mMaxEnergy, 0.3f, 1.0f);
+
+    gl::color(0.1f, 0.4f, 0.1f, vitality);
+    gl::drawSolidCircle(vec2{}, bSize * vitality * 2.0f);
+    //gl::color(0.2f, 0.8f, 0.2f, 1.f);
+    //gl::drawStrokedCircle(vec2{}, bSize, 1.0f);
 }
 
 // calculates a steering force towards a target
@@ -94,13 +108,13 @@ void Vehicle::arrive(const vec2& target) {
 }
 
 void Vehicle::draw_tail() const {
-    // draw tail
+    const float vitality = lmap(mEnergy, 0.0f, mMaxEnergy, 0.4f, 1.0f);
     const float decayIncrement =
             lmap(1.f, 0.f, static_cast<float>(mHistorySize), 0.f, 1.f);
     float decay = decayIncrement;
     for (const auto& pos : mHistory) {
-        gl::color(0.2f, 0.8f, 0.2f, decay * 0.5f);
-        gl::drawSolidCircle(pos, bSize * decay);
+        gl::color(0.2f, 0.8f, 0.2f, decay * 0.5f * vitality);
+        gl::drawSolidCircle(pos, bSize * decay * vitality * 2.0f);
         decay += decayIncrement;
     }
 }

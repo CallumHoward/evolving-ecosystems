@@ -23,6 +23,11 @@ public:
     void setCenter(vec2 center) { bPosition = center; }
 
     inline bool within(const Area& a) const { return a.contains(bPosition); }
+
+    constexpr float getEnergy() const { return mEnergy; }
+
+private:
+    constexpr static const float mEnergy = 50.0f;
 };
 
 
@@ -32,7 +37,7 @@ void Circle::draw() const {
     gl::color(0.0f, 0.5f, 0.7f, 0.3);
     gl::drawSolidCircle(bPosition, bSize);
     gl::color(0.1f, 0.6f, 0.8f, 0.8);
-    gl::drawStrokedCircle(bPosition, bSize);
+    gl::drawStrokedCircle(bPosition, bSize, 1.0f);
 }
 
 }

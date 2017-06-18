@@ -57,12 +57,14 @@ void Ecosystem::update(const vec2& arrivePoint) {
     //}
 
     for (auto& vehicle : mVehicles) {
+        if (vehicle.isDead()) { vehicle = Vehicle{makeRandPoint()}; }
         float distanceSquared;
         auto nn = mParticleSpatialStruct.nearestNeighborSearch(vehicle.getPosition(), &distanceSquared);
         Circle* nearestFoodRef = static_cast<Circle *>(nn->getData());
         
         if (distanceSquared < 6.0f * 6.0f) {  //TODO don't hardcode Vehicle size
-            *nearestFoodRef = Circle{3.0f, makeRandPoint()};  // eat food
+            vehicle.eat(nearestFoodRef->getEnergy());
+            *nearestFoodRef = Circle{3.0f, makeRandPoint()};
         }
         
         vehicle.arrive(nn->getPosition());

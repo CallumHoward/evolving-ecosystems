@@ -41,7 +41,8 @@ private:
     ch::Ecosystem mEcosystem;
 };
 
- void ArriveApp::setup() {
+
+void ArriveApp::setup() {
     // viewport parameters setup
     mOffset = vec2{};
     mCursor = vec2{getWindowCenter()};
@@ -59,7 +60,8 @@ private:
 }
 
 void ArriveApp::prepareSettings(ArriveApp::Settings *settings) {
-    settings->setWindowSize(1340, 800);
+    //settings->setWindowSize(1340, 800);
+    settings->setFullScreen();
     settings->setHighDensityDisplayEnabled();
 }
 
@@ -100,8 +102,8 @@ void ArriveApp::draw() {
         mEcosystem.draw();
     }
 
-    //mFramerate = getAverageFps();
-    //mParams.draw();
+    mFramerate = getAverageFps();
+    mParams.draw();
 }
 
 CINDER_APP(ArriveApp, RendererGl, &ArriveApp::prepareSettings)
