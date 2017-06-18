@@ -1,3 +1,4 @@
+#include <cmath>  // round
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -35,7 +36,7 @@ private:
     float mZoomAmount;
 
     // debug gui
-    float mFramerate;
+    int mFramerate;
     params::InterfaceGl mParams;
 
     ch::Ecosystem mEcosystem;
@@ -102,7 +103,7 @@ void ArriveApp::draw() {
         mEcosystem.draw();
     }
 
-    mFramerate = getAverageFps();
+    mFramerate = std::round(getAverageFps());
     mParams.draw();
 }
 
