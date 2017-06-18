@@ -25,7 +25,7 @@ public:
         mMaxForce{0.8f},
         mMaxSpeed{40.0f},
         mMaxEnergy{100.0f},
-        mEnergy{80.0f},
+        mEnergy{50.0f},
         mHistorySkip{0},  // for spread length of tail
         mHistorySize{10} {
             mHistory = boost::circular_buffer<vec2>{mHistorySize};
@@ -39,7 +39,7 @@ public:
     bool isDead() { return mEnergy <= 0.0f; }
 
     // we could add mass here if we want A = F / M
-    void applyForce(vec2 force) { mAcceleration += force; }
+    void applyForce(vec2 force) { mAcceleration += force / (bSize / 3.0f); }
 
 private:
     void draw_tail() const;
@@ -65,9 +65,8 @@ void Vehicle::update() {
     bPosition += mVelocity;
     mAcceleration = vec2{0, 0};   // reset acceleration to 0 each cycle
 
-    mEnergy -= 0.5f;                            // as time passes
-    mEnergy -= 0.02f * length(mVelocity);       // sustain speed
-    mEnergy -= 0.1f * length(mAcceleration);    // change speed
+    mEnergy -= 0.5f;                                    // as time passes
+    mEnergy -= 0.1f * length(mAcceleration) * bSize;    // F = M * A
 }
 
 void Vehicle::draw() const {

@@ -79,7 +79,7 @@ void ArriveApp::mouseWheel(MouseEvent event) {
 
 void ArriveApp::mouseMove(MouseEvent event) { mCursor = event.getPos(); }
 
-void ArriveApp::update() { mEcosystem.update(mCursor + mOffset); }
+void ArriveApp::update() { mEcosystem.update(); }
 
 void ArriveApp::draw() {
     gl::clear(Color{0.0f, 0.05f, 0.1f});

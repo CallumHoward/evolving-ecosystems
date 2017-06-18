@@ -13,8 +13,24 @@ using namespace ci::app;
 
 class Circle : public Particle {
 public:
-    Circle(float size = 0.0f, const vec2& position = vec2{})
-            : Particle{size, position} {}
+    enum CType {
+        FOOD,
+        CORPSE
+    };
+
+    Circle(float size = 0.0f, const vec2& position = vec2{}, const CType t = FOOD)
+            : Particle{size, position}, mType{t} {
+        switch (mType) {
+        case FOOD:
+            mFill = ColorA{0.0f, 0.5f, 0.7f, 0.3};
+            mOutline = ColorA{0.1f, 0.6f, 0.8f, 0.8};
+            break;
+        case CORPSE:
+            mFill = ColorA{0.7f, 0.2f, 0.3f, 0.1};
+            mOutline = ColorA{0.8f, 0.3f, 0.4f, 0.5};
+            break;
+        }
+    }
 
     void update() override;
     void draw() const override;
@@ -24,19 +40,22 @@ public:
 
     inline bool within(const Area& a) const { return a.contains(bPosition); }
 
+    CType getType() { return mType; }
     constexpr float getEnergy() const { return mEnergy; }
 
 private:
-    constexpr static const float mEnergy = 50.0f;
+    CType mType;
+    Color mFill, mOutline;
+    constexpr static const float mEnergy = 25.0f;
 };
 
 
 void Circle::update() {}
 
 void Circle::draw() const {
-    gl::color(0.0f, 0.5f, 0.7f, 0.3);
+    gl::color(mFill);
     gl::drawSolidCircle(bPosition, bSize);
-    gl::color(0.1f, 0.6f, 0.8f, 0.8);
+    gl::color(mOutline);
     gl::drawStrokedCircle(bPosition, bSize, 1.0f);
 }
 

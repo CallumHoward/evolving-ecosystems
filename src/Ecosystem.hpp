@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <iterator>
 #include <range/v3/algorithm.hpp>
 #include "cinder/gl/gl.h"
 #include "sp/Grid.h"
@@ -21,13 +22,15 @@ using namespace ranges;
 class Ecosystem {
 public:
     void setup();
-    void update(const vec2& arrivePoint);
+    void update();
     void draw();
 
 private:
-    int mNumFood = 50;
+    int mNumFood = 30;
+    int mMaxNumFood = 30;
     int mNumVehicles = 50;
     std::vector<Circle> mFood;
+    std::vector<Circle> mCorpses;
     std::vector<Vehicle> mVehicles;
 
     using SpatialStruct = sp::Grid2<Particle*>;
@@ -46,35 +49,45 @@ void Ecosystem::setup() {
     mParticleSpatialStruct = SpatialStruct{};
 }
 
-void Ecosystem::update(const vec2& arrivePoint) {
+void Ecosystem::update() {
     // update the grid
     mParticleSpatialStruct.clear();
-    for (auto& particle : mFood) {
+    for (auto& particle : view::concat(mFood, mCorpses)) {
         mParticleSpatialStruct.insert(particle.getPosition(), &particle);
     }
-    //for (auto& particle : mVehicles) {
-    //    mParticleSpatialStruct.insert(particle.getPosition(), &particle);
-    //}
 
     for (auto& vehicle : mVehicles) {
-        if (vehicle.isDead()) { vehicle = Vehicle{makeRandPoint()}; }
+        if (vehicle.isDead()) {
+            mCorpses.emplace_back(5.0f, vehicle.getPosition(), Circle::CORPSE);
+            vehicle = Vehicle{makeRandPoint()};
+        }
+
         float distanceSquared;
         auto nn = mParticleSpatialStruct.nearestNeighborSearch(vehicle.getPosition(), &distanceSquared);
         Circle* nearestFoodRef = static_cast<Circle *>(nn->getData());
-        
-        if (distanceSquared < 6.0f * 6.0f) {  //TODO don't hardcode Vehicle size
+
+        const auto size = vehicle.getSize();
+        if (distanceSquared < size * size) {
             vehicle.eat(nearestFoodRef->getEnergy());
-            *nearestFoodRef = Circle{3.0f, makeRandPoint()};
+            switch (nearestFoodRef->getType()) {
+            case Circle::FOOD:
+                *nearestFoodRef = Circle{3.0f, makeRandPoint()};
+                break;
+            case Circle::CORPSE:
+                mCorpses.erase(std::remove(std::begin(mCorpses), std::end(mCorpses), *nearestFoodRef));
+                break;
+            }
         }
-        
-        vehicle.arrive(nn->getPosition());
+
+        vehicle.arrive(nearestFoodRef->getPosition());
         vehicle.update();
     }
 }
 
 void Ecosystem::draw() {
-    for (auto& vehicle : mVehicles) { vehicle.draw(); }
+    for (auto& corpse : mCorpses) { corpse.draw(); }
     for (auto& food : mFood) { food.draw(); }
+    for (auto& vehicle : mVehicles) { vehicle.draw(); }
 }
 
 }
