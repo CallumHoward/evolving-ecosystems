@@ -17,14 +17,13 @@ namespace ch {
 
 using namespace  ci;
 
-const Color sGreen = Color{0.1f, 0.4f, 0.1f};
-const Color sBright = Color{0.4f, 0.9f, 0.4f};
-
+Color sGreen = Color{0.1f, 0.4f, 0.1f};
+Color sBright = Color{0.4f, 0.9f, 0.4f};
 
 class Vehicle : public Particle {
 public:
     Vehicle(float x, float y) : Vehicle{vec2{x, y}} {}
-    Vehicle(const vec2& point = vec2{}) :
+    Vehicle(const vec2& point = vec2{}, const Color& c = sGreen) :
         Particle{6.0f, point},
         mVelocity{0, 0},
         mAcceleration{0, 0},
@@ -33,7 +32,7 @@ public:
         mMaxEnergy{100.0f},
         mHistorySkip{0},  // for spread length of tail
         mHistorySize{10} {
-            mColor = sGreen;
+            mColor = c;
             mEnergy = randFloat(mMaxEnergy / 4.0f, mMaxEnergy / 2.0f);
             mHistory = boost::circular_buffer<vec2>{mHistorySize};
     }
@@ -44,6 +43,7 @@ public:
     void arrive(const vec2& target);
     void eat(float energy);
     bool isDead() { return mEnergy <= 0.0f; }
+    void setColor(Color c) { mColor = c; }
 
     // we could add mass here if we want A = F / M
     void applyForce(vec2 force) { mAcceleration += force / (bSize / 3.0f); }
@@ -124,7 +124,9 @@ void Vehicle::draw_tail() const {
             lmap(1.f, 0.f, static_cast<float>(mHistorySize), 0.f, 1.f);
     float decay = decayIncrement;
     for (const auto& pos : mHistory) {
-        gl::color(0.2f, 0.8f, 0.2f, decay * 0.5f * vitality);
+        const auto factor = 2.0f;
+        gl::color(factor * sGreen[0], factor * sGreen[1], factor * sGreen[2],
+                decay * 0.5f * vitality);
         gl::drawSolidCircle(pos, bSize * decay * vitality * 2.0f);
         decay += decayIncrement;
     }

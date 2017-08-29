@@ -25,6 +25,8 @@ public:
     void update();
     void draw();
 
+    Color mVehicleColor = Color{0.1f, 0.4f, 0.1f};
+
 private:
     int mNumFood = 30;
     int mMaxNumFood = 30;
@@ -65,7 +67,7 @@ void Ecosystem::update() {
     for (auto& vehicle : mVehicles) {
         if (vehicle.isDead()) {
             mCorpses.push_back(Circle{5.0f, vehicle.getPosition(), Circle::CORPSE});
-            vehicle = Vehicle{makeRandPoint()};
+            vehicle = Vehicle{makeRandPoint(), mVehicleColor};
             continue;
         }
 

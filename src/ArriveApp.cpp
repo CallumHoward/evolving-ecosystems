@@ -55,12 +55,14 @@ void ArriveApp::setup() {
     mZoomMin = 1.0f;
     mZoomAmount = 0.2f;
 
+    mEcosystem.setup();
+
     // debug gui setup
     const auto windowCaption = "Parameters";
-    mParams = params::InterfaceGl(windowCaption, ivec2{100, 200});
+    mParams = params::InterfaceGl{windowCaption, ivec2{100, 200}};
     mParams.addParam("framerate", &mFramerate, "");
-
-    mEcosystem.setup();
+    mParams.addParam("Vehicle Color", &ch::sGreen, "");
+    mParams.addParam("Vehicle Bright Color", &ch::sBright, "");
 }
 
 void ArriveApp::prepareSettings(ArriveApp::Settings *settings) {
