@@ -1,3 +1,6 @@
+// Circle.hpp
+// Callum Howard, 2017
+
 #ifndef Circle_hpp
 #define Circle_hpp
 

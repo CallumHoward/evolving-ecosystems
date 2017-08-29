@@ -1,10 +1,5 @@
-//
-//  chUtils.hpp
-//  ParticleSystem
-//
-//  Created by Callum Howard on 12/6/17.
-//
-//
+// chUtils.hpp
+// Callum Howard, 2017
 
 #ifndef chUtils_h
 #define chUtils_h
@@ -47,7 +42,7 @@ namespace ch {
     }
 
     void setMagnitude(vec2& v, float len) { v = safeNormalize(v) * len; }
-    
+
     inline vec2 makeRandPoint() {
         return vec2{randFloat(getWindowWidth()), randFloat(getWindowHeight())};
     }

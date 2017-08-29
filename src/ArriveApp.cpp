@@ -1,4 +1,7 @@
-#include <cmath>  // round
+// ArriveApp.cpp
+// Callum Howard, 2017
+
+#include <cmath>                    // round
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"

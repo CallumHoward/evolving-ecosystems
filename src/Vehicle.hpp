@@ -6,10 +6,11 @@
 
 #include <boost/circular_buffer.hpp>
 #include <range/v3/view.hpp>
-#include "chUtils.hpp"
-#include "cinder/gl/gl.h"
+#include "chUtils.hpp"                  // limit, heading, setMagnitude, length
+#include "cinder/gl/gl.h"               // vec2
 #include "cinder/Timeline.h"
-#include "cinder/CinderMath.h"
+#include "cinder/Rand.h"                // randFloat
+#include "cinder/CinderMath.h"          // M_PI, lmap, constrain
 #include "Particle.hpp"
 
 namespace ch {
@@ -64,16 +65,16 @@ private:
 
 
 void Vehicle::update() {
-    mVelocity += mAcceleration;   // update the velocity
+    mVelocity += mAcceleration;  // update the velocity
     ch::limit(mVelocity, mMaxSpeed);
     if (mHistorySkip % 5 == 0) {
         mHistory.push_back(bPosition);
     }
     bPosition += mVelocity;
-    mAcceleration = vec2{0, 0};   // reset acceleration to 0 each cycle
+    mAcceleration = vec2{0, 0};  // reset acceleration to 0 each cycle
 
-    mEnergy -= 0.5f;                                    // as time passes
-    mEnergy -= 0.1f * length(mAcceleration) * bSize;    // F = M * A
+    mEnergy -= 0.5f;  // as time passes
+    mEnergy -= 0.1f * ch::length(mAcceleration) * bSize;  // F = M * A
 }
 
 void Vehicle::draw() const {
@@ -101,7 +102,7 @@ void Vehicle::eat(float energy) {
 // calculates a steering force towards a target
 void Vehicle::arrive(const vec2& target) {
     vec2 desired = target - bPosition;
-    const float d = length(desired);
+    const float d = ch::length(desired);
 
     // scale within arbitrary damping within 100 pixels so that it arrives
     const float proximity = 100.0f;

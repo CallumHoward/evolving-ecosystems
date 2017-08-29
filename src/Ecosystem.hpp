@@ -4,15 +4,13 @@
 #ifndef ECOSYSTEM_HPP
 #define ECOSYSTEM_HPP
 
-#include <algorithm>
 #include <vector>
-#include <iterator>
-#include <range/v3/algorithm.hpp>
+#include <range/v3/algorithm.hpp>       // generate
 #include <boost/circular_buffer.hpp>
 #include "cinder/gl/gl.h"
 #include "sp/Grid.h"
 #include "sp/KdTree.h"
-#include "chUtils.hpp"
+#include "chUtils.hpp"                  // makeRandPoint
 #include "Circle.hpp"
 #include "Vehicle.hpp"
 
@@ -72,7 +70,8 @@ void Ecosystem::update() {
         }
 
         float distanceSquared;
-        auto nn = mParticleSpatialStruct.nearestNeighborSearch(vehicle.getPosition(), &distanceSquared);
+        auto nn = mParticleSpatialStruct.nearestNeighborSearch(
+                vehicle.getPosition(), &distanceSquared);
         Circle* nearestFoodRef = static_cast<Circle *>(nn->getData());
 
         const auto size = vehicle.getSize();
