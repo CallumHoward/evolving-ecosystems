@@ -8,6 +8,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "Particle.hpp"
+#include "chGlobals.hpp"                // Tick
 
 namespace ch {
 
@@ -21,8 +22,9 @@ public:
         CORPSE
     };
 
-    Circle(float size = 0.0f, const vec2& position = vec2{}, const CType t = FOOD)
-            : Particle{size, position}, mType{t}, mActive{true} {
+    Circle(Tick currentTick, float size = 0.0f,
+            const vec2& position = vec2{}, const CType t = FOOD)
+        : Particle{size, position, currentTick}, mType{t}, mActive{true} {
         switch (mType) {
         case FOOD:
             mEnergy = 25.0f;
@@ -58,7 +60,9 @@ private:
 };
 
 
-void Circle::update() {}
+void Circle::update() {
+    //TODO add wander
+}
 
 void Circle::draw() const {
     if (not mActive) { return; }

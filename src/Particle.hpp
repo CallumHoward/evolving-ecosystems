@@ -5,6 +5,7 @@
 #define PARTICLE_HPP
 
 #include "cinder/gl/gl.h"
+#include "chGlobals.hpp"    // Tick
 
 namespace ch {
 
@@ -12,8 +13,8 @@ using namespace ci;
 
 class Particle {
 public:
-    Particle(float size, const vec2 &position)
-            : bSize{size}, bPosition{position} {}
+    Particle(float size, const vec2 &position, Tick currentTick)
+            : bSize{size}, bPosition{position}, bBirthTick{currentTick} {}
 
     virtual void update() = 0;
     virtual void draw() const = 0;
@@ -24,6 +25,7 @@ public:
 protected:
     vec2 bPosition;
     float bSize;
+    Tick bBirthTick;
 };
 
 }

@@ -7,6 +7,7 @@
 #include <boost/circular_buffer.hpp>
 #include <range/v3/view.hpp>
 #include "chUtils.hpp"                  // limit, heading, setMagnitude, length
+#include "chGlobals.hpp"                // Tick
 #include "cinder/gl/gl.h"               // vec2
 #include "cinder/Timeline.h"
 #include "cinder/Rand.h"                // randFloat
@@ -22,9 +23,9 @@ Color sBright = Color{0.4f, 0.9f, 0.4f};
 
 class Vehicle : public Particle {
 public:
-    Vehicle(float x, float y) : Vehicle{vec2{x, y}} {}
-    Vehicle(const vec2& point = vec2{}, const Color& c = sGreen) :
-        Particle{6.0f, point},
+    //Vehicle(Tick currentTick, float x, float y) : Vehicle{currentTick, vec2{x, y}} {}
+    Vehicle(Tick currentTick, const vec2& point = vec2{}, const Color& c = sGreen) :
+        Particle{6.0f, point, currentTick},
         mVelocity{0, 0},
         mAcceleration{0, 0},
         mMaxForce{0.8f},
