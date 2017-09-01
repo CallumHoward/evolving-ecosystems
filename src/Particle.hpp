@@ -21,6 +21,7 @@ public:
 
     vec2 getPosition() const { return bPosition; }
     float getSize() const { return bSize; }
+    Tick getBirthTick() const { return bBirthTick; }
 
 protected:
     vec2 bPosition;

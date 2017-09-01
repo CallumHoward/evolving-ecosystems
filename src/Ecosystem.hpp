@@ -7,7 +7,7 @@
 #include <cassert>
 #include <vector>
 #include <limits>                       // numeric_limits
-#include <range/v3/algorithm.hpp>       // generate
+#include <algorithm>                    // generate
 #include <boost/circular_buffer.hpp>
 #include "cinder/gl/gl.h"
 #include "sp/Grid.h"
@@ -35,6 +35,7 @@ private:
     int mNumFood = 30;
     int mMaxNumFood = 30;
     int mNumVehicles = 50;
+    Tick mFittestLifetime = 0;
     std::vector<Circle> mFood;
     std::vector<Vehicle> mVehicles;
     boost::circular_buffer<Circle> mCorpses;
@@ -47,11 +48,10 @@ private:
 
 
 void Ecosystem::setup() {
-    mFood = std::vector<Circle>(mNumFood);
-    generate(mFood, [this]{ return Circle{0, 3.0f, makeRandPoint()}; });
-
-    mVehicles = std::vector<Vehicle>(mNumVehicles);
-    generate(mVehicles, [this]{ return Vehicle{0, makeRandPoint(), mVehicleColor}; });
+    std::generate_n(mFood.begin(), mNumFood,
+            [this]{ return Circle{0, 3.0f, makeRandPoint()}; });
+    std::generate_n(mVehicles.begin(), mNumVehicles,
+            [this]{ return Vehicle{0, makeRandPoint(), mVehicleColor}; });
 
     mCorpses = boost::circular_buffer<Circle>{30};
     mParticleSpatialStruct = SpatialStruct{};
@@ -70,7 +70,14 @@ void Ecosystem::update() {
 
     for (auto& vehicle : mVehicles) {
         if (vehicle.isDead()) {
+            // check how long it survived and if it broke the record
+            const auto lifetime = mTickCount - vehicle.getBirthTick();
+            if (lifetime > mFittestLifetime) { mFittestLifetime = lifetime; }
+
+            // place a corpse at its last position
             mCorpses.push_back(Circle{mTickCount, 5.0f, vehicle.getPosition(), Circle::CORPSE});
+
+            // spawn a new vehicle in its place
             vehicle = Vehicle{mTickCount, makeRandPoint(), mVehicleColor};
             continue;
         }
