@@ -18,6 +18,7 @@ public:
     void setup() override;
     static void prepareSettings(ArriveApp::Settings *settings);
     void mouseDown(MouseEvent event) override;
+    void mouseUp(MouseEvent event) override;
     void mouseDrag(MouseEvent event) override;
     void mouseWheel(MouseEvent event) override;
     void mouseMove(MouseEvent event) override;
@@ -71,10 +72,26 @@ void ArriveApp::prepareSettings(ArriveApp::Settings *settings) {
     settings->setHighDensityDisplayEnabled();
 }
 
-void ArriveApp::mouseDown(MouseEvent event) { mLastPos = event.getPos(); }
+void ArriveApp::mouseDown(MouseEvent event) {
+    const vec2 pos = event.getPos();
+
+    mEcosystem.mouseDown(pos + mOffset);
+    if (mEcosystem.isFocused()) { return; }
+
+    mLastPos = event.getPos();
+}
+
+void ArriveApp::mouseUp(MouseEvent event) {
+    const vec2 pos = event.getPos();
+    mEcosystem.mouseUp(pos + mOffset);
+}
 
 void ArriveApp::mouseDrag(MouseEvent event) {
     const vec2 pos = event.getPos();
+
+    mEcosystem.mouseDrag(pos);
+    if (mEcosystem.isFocused()) { return; }
+
     mOffset += (mLastPos - pos) / mZoom;
     mLastPos = pos;
 }
@@ -83,7 +100,10 @@ void ArriveApp::mouseWheel(MouseEvent event) {
     zoomChange(event.getWheelIncrement());
 }
 
-void ArriveApp::mouseMove(MouseEvent event) { mCursor = event.getPos(); }
+void ArriveApp::mouseMove(MouseEvent event) {
+    if (mEcosystem.isFocused()) { return; }
+    mCursor = event.getPos();
+}
 
 void ArriveApp::update() { mEcosystem.update(); }
 

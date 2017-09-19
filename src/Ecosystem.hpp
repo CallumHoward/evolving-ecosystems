@@ -8,8 +8,10 @@
 #include <vector>
 #include <limits>                       // numeric_limits
 #include <algorithm>                    // generate
+#include <range/v3/algorithm/any_of.hpp>
 #include <boost/circular_buffer.hpp>
 #include "cinder/gl/gl.h"
+#include "cinder/app/App.h"             // MouseEvent
 #include "sp/Grid.h"
 #include "sp/KdTree.h"
 #include "chUtils.hpp"                  // makeRandPoint
@@ -29,6 +31,10 @@ public:
     void update();
     void updateVehicles();
     void draw() const;
+    void mouseDown(const vec2& mousePos);
+    void mouseUp(const vec2& mousePos);
+    void mouseDrag(const vec2& mousePos);
+    bool isFocused() const;
     Color mVehicleColor = Color{0.1f, 0.4f, 0.1f};
 
 private:
@@ -53,7 +59,7 @@ void Ecosystem::setup() {
 
     std::generate_n(std::back_inserter(mFood), mNumFood,
             [this]{ return Circle{0, 3.0f, makeRandPoint()}; });
-    
+
     std::generate_n(std::back_inserter(mVehicles), mNumVehicles,
             [this]{ return Vehicle{0, makeRandPoint(), mVehicleColor}; });
 
@@ -63,7 +69,7 @@ void Ecosystem::setup() {
 
     // make a sample barrier
     mBarriers.push_back(Barrier{0, vec2{100, 100}, vec2{100, 500}});
-    
+
     mParticleSpatialStruct = SpatialStruct{};
 }
 
@@ -127,7 +133,27 @@ void Ecosystem::updateVehicles() {
     }
 }
 
+void Ecosystem::mouseDown(const vec2& mousePos) {
+    for (auto& barrier : mBarriers) {
+        barrier.mouseDown(mousePos);
+    }
+}
 
+void Ecosystem::mouseUp(const vec2& mousePos) {
+    for (auto& barrier : mBarriers) {
+        barrier.mouseUp(mousePos);
+    }
+}
+
+void Ecosystem::mouseDrag(const vec2& mousePos) {
+    for (auto& barrier : mBarriers) {
+        barrier.mouseDrag(mousePos);
+    }
+}
+
+bool Ecosystem::isFocused() const {
+    return ranges::any_of(mBarriers, [] (const Barrier& b) { return b.isFocused(); });
+}
 
 void Ecosystem::draw() const {
     for (const auto& corpse : mCorpses) { corpse.draw(); }
