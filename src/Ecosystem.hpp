@@ -16,6 +16,7 @@
 #include "chGlobals.hpp"                // Tick
 #include "Circle.hpp"
 #include "Vehicle.hpp"
+#include "Barrier.hpp"
 
 namespace ch {
 
@@ -26,8 +27,8 @@ class Ecosystem {
 public:
     void setup();
     void update();
-    void draw();
-
+    void updateVehicles();
+    void draw() const;
     Color mVehicleColor = Color{0.1f, 0.4f, 0.1f};
 
 private:
@@ -38,6 +39,7 @@ private:
     Tick mFittestLifetime = 0;
     std::vector<Circle> mFood;
     std::vector<Vehicle> mVehicles;
+    std::vector<Barrier> mBarriers;
     boost::circular_buffer<Circle> mCorpses;
 
     //using SpatialStruct = sp::Grid2<Particle*>;
@@ -48,13 +50,20 @@ private:
 
 
 void Ecosystem::setup() {
-    
+
     std::generate_n(std::back_inserter(mFood), mNumFood,
             [this]{ return Circle{0, 3.0f, makeRandPoint()}; });
+    
     std::generate_n(std::back_inserter(mVehicles), mNumVehicles,
             [this]{ return Vehicle{0, makeRandPoint(), mVehicleColor}; });
 
     mCorpses = boost::circular_buffer<Circle>{30};
+
+    mBarriers = std::vector<Barrier>{};
+
+    // make a sample barrier
+    mBarriers.push_back(Barrier{0, vec2{100, 100}, vec2{100, 500}});
+    
     mParticleSpatialStruct = SpatialStruct{};
 }
 
@@ -69,6 +78,14 @@ void Ecosystem::update() {
         mParticleSpatialStruct.insert(particle.getPosition(), &particle);
     }
 
+    updateVehicles();
+
+    for (auto& barrier : mBarriers) {
+        barrier.update();
+    }
+}
+
+void Ecosystem::updateVehicles() {
     for (auto& vehicle : mVehicles) {
         if (vehicle.isDead()) {
             // check how long it survived and if it broke the record
@@ -110,10 +127,13 @@ void Ecosystem::update() {
     }
 }
 
-void Ecosystem::draw() {
-    for (auto& corpse : mCorpses) { corpse.draw(); }
-    for (auto& food : mFood) { food.draw(); }
-    for (auto& vehicle : mVehicles) { vehicle.draw(); }
+
+
+void Ecosystem::draw() const {
+    for (const auto& corpse : mCorpses) { corpse.draw(); }
+    for (const auto& food : mFood) { food.draw(); }
+    for (const auto& vehicle : mVehicles) { vehicle.draw(); }
+    for (const auto& barrier : mBarriers) { barrier.draw(); }
 }
 
 }

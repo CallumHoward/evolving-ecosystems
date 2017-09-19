@@ -44,6 +44,7 @@
 		906DF3921EF56B6A0097E626 /* Circle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Circle.hpp; path = ../src/Circle.hpp; sourceTree = "<group>"; };
 		906DF3931EF56B6A0097E626 /* Ecosystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Ecosystem.hpp; path = ../src/Ecosystem.hpp; sourceTree = "<group>"; };
 		906DF3941EF5948D0097E626 /* Particle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Particle.hpp; path = ../src/Particle.hpp; sourceTree = "<group>"; };
+		90948A171F70AA83007C44CC /* Barrier.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Barrier.hpp; path = ../src/Barrier.hpp; sourceTree = "<group>"; };
 		90A3210F1EF40B2400A43C01 /* Vehicle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Vehicle.hpp; path = ../src/Vehicle.hpp; sourceTree = "<group>"; };
 		90A321101EF40D8E00A43C01 /* chUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = chUtils.hpp; path = ../src/chUtils.hpp; sourceTree = "<group>"; };
 		90FD73481F579201008220B2 /* chGlobals.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = chGlobals.hpp; path = ../src/chGlobals.hpp; sourceTree = "<group>"; };
@@ -92,6 +93,7 @@
 				906DF3921EF56B6A0097E626 /* Circle.hpp */,
 				906DF3931EF56B6A0097E626 /* Ecosystem.hpp */,
 				90A3210F1EF40B2400A43C01 /* Vehicle.hpp */,
+				90948A171F70AA83007C44CC /* Barrier.hpp */,
 				BA19AB8B967B469391AC3C9E /* ArriveApp.cpp */,
 			);
 			name = Source;

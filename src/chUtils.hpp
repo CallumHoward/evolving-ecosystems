@@ -18,6 +18,10 @@ namespace ch {
     vec2 safeNormalize(const vec2& v);
     void limit(vec2& v, float maxLength);
 
+    inline vec2 midpoint(const vec2& first, const vec2& second) {
+        return (second - first) * 0.5f;
+    };
+
     template<typename T>
     inline bool between(T a, T lower, T upper) { return a >= lower and a <= upper; }
 

@@ -6,6 +6,7 @@
 
 #include "cinder/gl/gl.h"
 #include "chGlobals.hpp"    // Tick
+#include "chUtils.hpp"      // distance
 
 namespace ch {
 
@@ -22,6 +23,7 @@ public:
     vec2 getPosition() const { return bPosition; }
     float getSize() const { return bSize; }
     Tick getBirthTick() const { return bBirthTick; }
+    bool contains(const vec2& point) const { return distance(bPosition, point) < bSize; }
 
 protected:
     vec2 bPosition;
