@@ -48,9 +48,10 @@ private:
 
 
 void Ecosystem::setup() {
-    std::generate_n(mFood.begin(), mNumFood,
+    
+    std::generate_n(std::back_inserter(mFood), mNumFood,
             [this]{ return Circle{0, 3.0f, makeRandPoint()}; });
-    std::generate_n(mVehicles.begin(), mNumVehicles,
+    std::generate_n(std::back_inserter(mVehicles), mNumVehicles,
             [this]{ return Vehicle{0, makeRandPoint(), mVehicleColor}; });
 
     mCorpses = boost::circular_buffer<Circle>{30};
@@ -105,7 +106,7 @@ void Ecosystem::update() {
 
         // update ecosystem tick count
         ++mTickCount;
-        assert(mTickCount != std::numeric_limits<Tick>::max);
+        assert(mTickCount != std::numeric_limits<Tick>::max());
     }
 }
 

@@ -1,8 +1,8 @@
 // chUtils.hpp
 // Callum Howard, 2017
 
-#ifndef chUtils_h
-#define chUtils_h
+#ifndef CHUTILS_H
+#define CHUTILS_H
 
 #include "cinder/gl/gl.h"
 #include "cinder/CinderMath.h"
