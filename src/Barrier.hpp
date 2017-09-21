@@ -20,6 +20,7 @@ public:
     void mouseDown(vec2 mousePos);
     void mouseUp(vec2 mousePos);
     void mouseDrag(vec2 mousePos);
+    void mouseMove(vec2 mousePos);
     bool isFocused() const;
 
     //bool hasCrossed(const vec2& oldPos, const vec2& newPos) const; //TODO
@@ -28,7 +29,7 @@ public:
     class EndPoint : public Particle {
     public:
         EndPoint(Tick currentTick, float size = 0.0f, const vec2& position = vec2{}) :
-                Particle{size, position, currentTick}, mActive{true}, mMouseOver{false} {
+                Particle{size, position, currentTick}, mActive{true}, mMouseOver{true} {
             mFill = ColorA{0.5f, 0.5f, 0.0f, 0.3};
             mOutline = ColorA{0.6f, 0.6f, 0.1f, 0.8};
         }
@@ -96,7 +97,7 @@ void Barrier::draw() const {
     gl::translate(bPosition);
 
     const auto translation = mSecond.getPosition() - mFirst.getPosition();
-    const auto perpendicular = normalize(vec2{-translation.y, translation.x});
+    const auto perpendicular = safeNormalize(vec2{-translation.y, translation.x});
 
     const auto linePoints = std::vector<vec2>{
         (mFirst.getPosition() + perpendicular * bSize),
@@ -117,16 +118,28 @@ void Barrier::draw() const {
 void Barrier::mouseDown(vec2 mousePos) {
     mousePos -= bPosition;
     mFirst.mouseDown(mousePos);
+    if (isFocused()) { return; }
     mSecond.mouseDown(mousePos);
 }
 
 void Barrier::mouseUp(vec2 mousePos) {
+    const auto dist = distance(mFirst.getPosition(), mSecond.getPosition());
+    if (dist < bSize * 4.0f) {
+        return;
+    }
     mousePos -= bPosition;
     mFirst.mouseUp(mousePos, mSecond.getPosition());
     mSecond.mouseUp(mousePos, mFirst.getPosition());
 }
 
 void Barrier::mouseDrag(vec2 mousePos) {
+    mousePos -= bPosition;
+    mFirst.mouseDrag(mousePos);
+    if (mFirst.isFocused()) { return; }
+    mSecond.mouseDrag(mousePos);
+}
+
+void Barrier::mouseMove(vec2 mousePos) {
     mousePos -= bPosition;
     mFirst.mouseDrag(mousePos);
     mSecond.mouseDrag(mousePos);

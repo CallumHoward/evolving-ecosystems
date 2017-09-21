@@ -22,6 +22,7 @@ public:
     void mouseDrag(MouseEvent event) override;
     void mouseWheel(MouseEvent event) override;
     void mouseMove(MouseEvent event) override;
+    void keyDown(KeyEvent event) override;
     void update() override;
     void draw() override;
 
@@ -89,7 +90,7 @@ void ArriveApp::mouseUp(MouseEvent event) {
 void ArriveApp::mouseDrag(MouseEvent event) {
     const vec2 pos = event.getPos();
 
-    mEcosystem.mouseDrag(pos);
+    mEcosystem.mouseDrag(pos + mOffset);
     if (mEcosystem.isFocused()) { return; }
 
     mOffset += (mLastPos - pos) / mZoom;
@@ -101,8 +102,19 @@ void ArriveApp::mouseWheel(MouseEvent event) {
 }
 
 void ArriveApp::mouseMove(MouseEvent event) {
+    const vec2 pos = event.getPos();
+
+    if (not event.isLeftDown()) {
+        mEcosystem.mouseMove(pos);
+    }
+
     if (mEcosystem.isFocused()) { return; }
+
     mCursor = event.getPos();
+}
+
+void ArriveApp::keyDown(KeyEvent event) {
+    mEcosystem.keyDown(event);
 }
 
 void ArriveApp::update() { mEcosystem.update(); }

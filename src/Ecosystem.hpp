@@ -34,6 +34,8 @@ public:
     void mouseDown(const vec2& mousePos);
     void mouseUp(const vec2& mousePos);
     void mouseDrag(const vec2& mousePos);
+    void mouseMove(const vec2& mousePos);
+    void keyDown(KeyEvent event);
     bool isFocused() const;
     Color mVehicleColor = Color{0.1f, 0.4f, 0.1f};
 
@@ -68,7 +70,7 @@ void Ecosystem::setup() {
     mBarriers = std::vector<Barrier>{};
 
     // make a sample barrier
-    mBarriers.push_back(Barrier{0, vec2{100, 100}, vec2{100, 500}});
+    //mBarriers.push_back(Barrier{0});
 
     mParticleSpatialStruct = SpatialStruct{};
 }
@@ -148,6 +150,18 @@ void Ecosystem::mouseUp(const vec2& mousePos) {
 void Ecosystem::mouseDrag(const vec2& mousePos) {
     for (auto& barrier : mBarriers) {
         barrier.mouseDrag(mousePos);
+    }
+}
+
+void Ecosystem::mouseMove(const vec2& mousePos) {
+    for (auto& barrier : mBarriers) {
+        barrier.mouseMove(mousePos);
+    }
+}
+
+void Ecosystem::keyDown(KeyEvent event) {
+    if (event.getChar() == cinder::app::KeyEvent::KEY_SPACE) {
+        mBarriers.push_back(Barrier{0});
     }
 }
 
