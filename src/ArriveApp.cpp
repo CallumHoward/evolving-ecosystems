@@ -7,6 +7,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
 
+#include "UserInterface.hpp"
 #include "Ecosystem.hpp"
 
 using namespace ci;
@@ -45,6 +46,7 @@ private:
     params::InterfaceGl mParams;
 
     ch::Ecosystem mEcosystem;
+    ch::UserInterface mUI;
 };
 
 
@@ -58,6 +60,7 @@ void ArriveApp::setup() {
     mZoomAmount = 0.2f;
 
     mEcosystem.setup();
+    mUI = ch::UserInterface{};
 
     // debug gui setup
     const auto windowCaption = "Parameters";
@@ -79,12 +82,16 @@ void ArriveApp::mouseDown(MouseEvent event) {
     mEcosystem.mouseDown(pos + mOffset);
     if (mEcosystem.isFocused()) { return; }
 
+    mUI.mouseDown(pos + mOffset);
+    if (mUI.isFocused()) { return; }
+
     mLastPos = event.getPos();
 }
 
 void ArriveApp::mouseUp(MouseEvent event) {
     const vec2 pos = event.getPos();
     mEcosystem.mouseUp(pos + mOffset);
+    mUI.mouseUp(pos + mOffset);
 }
 
 void ArriveApp::mouseDrag(MouseEvent event) {
@@ -92,6 +99,9 @@ void ArriveApp::mouseDrag(MouseEvent event) {
 
     mEcosystem.mouseDrag(pos + mOffset);
     if (mEcosystem.isFocused()) { return; }
+
+    // do nothing if draging in UI
+    if (mUI.isFocused()) { return; }
 
     mOffset += (mLastPos - pos) / mZoom;
     mLastPos = pos;
@@ -104,11 +114,11 @@ void ArriveApp::mouseWheel(MouseEvent event) {
 void ArriveApp::mouseMove(MouseEvent event) {
     const vec2 pos = event.getPos();
 
-    if (not event.isLeftDown()) {
-        mEcosystem.mouseMove(pos);
-    }
-
+    mEcosystem.mouseMove(pos);
     if (mEcosystem.isFocused()) { return; }
+
+    mUI.mouseMove(pos);
+    if (mUI.isFocused()) { return; }
 
     mCursor = event.getPos();
 }
@@ -117,7 +127,10 @@ void ArriveApp::keyDown(KeyEvent event) {
     mEcosystem.keyDown(event);
 }
 
-void ArriveApp::update() { mEcosystem.update(); }
+void ArriveApp::update() {
+    mEcosystem.update();
+    mUI.update();
+}
 
 void ArriveApp::draw() {
     gl::clear(Color{0.0f, 0.05f, 0.1f});
@@ -125,6 +138,8 @@ void ArriveApp::draw() {
     // draw cursor (don't translate)
     gl::color(0.f, 0.f, 0.5f, 0.2f);
     //gl::drawSolidCircle(mCursor, 100.0f);
+
+    mUI.draw();
 
     {
         gl::ScopedModelMatrix modelMatrix;

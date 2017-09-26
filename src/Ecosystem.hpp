@@ -29,7 +29,6 @@ class Ecosystem {
 public:
     void setup();
     void update();
-    void updateVehicles();
     void draw() const;
     void mouseDown(const vec2& mousePos);
     void mouseUp(const vec2& mousePos);
@@ -40,6 +39,8 @@ public:
     Color mVehicleColor = Color{0.1f, 0.4f, 0.1f};
 
 private:
+    void updateVehicles();
+
     Tick mTickCount = 0;
     int mNumFood = 30;
     int mMaxNumFood = 30;
