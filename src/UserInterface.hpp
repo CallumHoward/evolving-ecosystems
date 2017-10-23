@@ -22,14 +22,17 @@ public:
     void mouseMove(const vec2& pos);
     void mouseDown(const vec2& pos);
     void mouseUp(const vec2& pos);
+    void addButton(const Rectf& r, const std::function<void()>& callback);
     bool isFocused();
 
 private:
     std::vector<UIButton> mButtons;
 };
 
-UserInterface::UserInterface() {
-    mButtons.emplace_back(Rectf{100, 100, 200, 200});
+UserInterface::UserInterface() {}
+
+void UserInterface::addButton(const Rectf& r, const std::function<void()>& callback) {
+    mButtons.emplace_back(r, callback);
 }
 
 void UserInterface::update() {

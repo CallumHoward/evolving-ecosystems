@@ -20,7 +20,7 @@ public:
         UP
     };
 
-    UIButton(const Rectf& rectf);
+    UIButton(const Rectf& rectf, const std::function<void()>& callback);
     void update();
     void draw() const;
     void mouseMove(const vec2& pos);
@@ -31,10 +31,12 @@ public:
 private:
     State mState;
     const Rectf mRectf;
+    std::function<void()> mCallback;
 };
 
 
-UIButton::UIButton(const Rectf& rectf) : mRectf{rectf}, mState{UP} {}
+UIButton::UIButton(const Rectf& rectf, const std::function<void()>& callback) :
+        mRectf{rectf}, mState{UP}, mCallback{callback} {}
 
 void UIButton::update() {
 
@@ -43,9 +45,9 @@ void UIButton::update() {
 void UIButton::draw() const {
 
     switch (mState) {
-        case HOVER: gl::color(ColorA{0.8f, 0.8f, 0.8f, 0.5f}); break;
-        case DOWN: gl::color(ColorA{0.5f, 0.5f, 0.5f, 0.5f}); break;
-        case UP: gl::color(ColorA{0.3f, 0.3f, 0.3f, 0.5f}); break;
+        case HOVER: gl::color(ColorA{0.8f, 0.8f, 0.8f, 0.8f}); break;
+        case DOWN: gl::color(ColorA{0.5f, 0.5f, 0.5f, 0.8f}); break;
+        case UP: gl::color(ColorA{0.6f, 0.6f, 0.1f, 0.8}); break;
     }
 
     gl::drawSolidRect(mRectf);
@@ -56,11 +58,14 @@ void UIButton::mouseMove(const vec2& pos) {
 }
 
 void UIButton::mouseDown(const vec2& pos) {
-    if (mRectf.contains(pos)) { mState = DOWN; }
+    if (mRectf.contains(pos) and mState != DOWN) {
+        mCallback();
+        mState = DOWN;
+    }
 }
 
 void UIButton::mouseUp(const vec2& pos) {
-    mState = HOVER;
+    if (mState == DOWN) { mState = UP; }
 }
 
 bool UIButton::isFocused() const { return mState == HOVER or mState == DOWN; }

@@ -23,7 +23,7 @@ public:
     void mouseMove(vec2 mousePos);
     bool isFocused() const;
 
-    //bool hasCrossed(const vec2& oldPos, const vec2& newPos) const; //TODO
+    bool hasCrossed(const vec2& oldPos, const vec2& newPos) const; //TODO
 
     // inner class
     class EndPoint : public Particle {
@@ -124,9 +124,7 @@ void Barrier::mouseDown(vec2 mousePos) {
 
 void Barrier::mouseUp(vec2 mousePos) {
     const auto dist = distance(mFirst.getPosition(), mSecond.getPosition());
-    if (dist < bSize * 4.0f) {
-        return;
-    }
+    if (dist < bSize * 4.0f) { return; }
     mousePos -= bPosition;
     mFirst.mouseUp(mousePos, mSecond.getPosition());
     mSecond.mouseUp(mousePos, mFirst.getPosition());
@@ -148,6 +146,16 @@ void Barrier::mouseMove(vec2 mousePos) {
 bool Barrier::isFocused() const {
     return mFirst.isFocused() or mSecond.isFocused();
 }
+
+//bool hasCrossed(const vec2& oldPos, const vec2& newPos) const {
+//    return ;
+//}
+
+//vec2 ccw(const vec2& a, const vec2& b, const vec2& c) {
+//    // (C.y-A.y) * (B.x-A.x) > (B.y-A.y) * (C.x-A.x)
+//    return (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x);
+//}
+
 
 } // namespace ch
 

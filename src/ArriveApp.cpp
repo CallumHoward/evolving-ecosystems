@@ -45,6 +45,8 @@ private:
     int mFramerate;
     params::InterfaceGl mParams;
 
+    vec2 mDebugPoint;
+
     ch::Ecosystem mEcosystem;
     ch::UserInterface mUI;
 };
@@ -61,6 +63,9 @@ void ArriveApp::setup() {
 
     mEcosystem.setup();
     mUI = ch::UserInterface{};
+    const auto windowWidth = static_cast<float>(getWindowWidth());
+    mUI.addButton(Rectf{windowWidth - 200, 0, windowWidth, 200}, std::bind(&ch::Ecosystem::addBarrier, &mEcosystem));
+    mUI.addButton(Rectf{windowWidth - 200, 220, windowWidth, 420}, std::bind(&ch::Ecosystem::removeBarrier, &mEcosystem));
 
     // debug gui setup
     const auto windowCaption = "Parameters";
@@ -68,6 +73,7 @@ void ArriveApp::setup() {
     mParams.addParam("framerate", &mFramerate, "");
     mParams.addParam("Vehicle Color", &ch::sGreen, "");
     mParams.addParam("Vehicle Bright Color", &ch::sBright, "");
+
 }
 
 void ArriveApp::prepareSettings(ArriveApp::Settings *settings) {
@@ -79,10 +85,10 @@ void ArriveApp::prepareSettings(ArriveApp::Settings *settings) {
 void ArriveApp::mouseDown(MouseEvent event) {
     const vec2 pos = event.getPos();
 
-    mEcosystem.mouseDown(pos + mOffset);
+    mEcosystem.mouseDown(pos);
     if (mEcosystem.isFocused()) { return; }
 
-    mUI.mouseDown(pos + mOffset);
+    mUI.mouseDown(pos);
     if (mUI.isFocused()) { return; }
 
     mLastPos = event.getPos();
@@ -91,13 +97,16 @@ void ArriveApp::mouseDown(MouseEvent event) {
 void ArriveApp::mouseUp(MouseEvent event) {
     const vec2 pos = event.getPos();
     mEcosystem.mouseUp(pos + mOffset);
-    mUI.mouseUp(pos + mOffset);
+    //mEcosystem.mouseUp(pos);
+    mUI.mouseUp(pos);
 }
 
 void ArriveApp::mouseDrag(MouseEvent event) {
     const vec2 pos = event.getPos();
+    mDebugPoint = pos + mOffset;
 
     mEcosystem.mouseDrag(pos + mOffset);
+    //mEcosystem.mouseDrag(pos);
     if (mEcosystem.isFocused()) { return; }
 
     // do nothing if draging in UI
@@ -133,13 +142,12 @@ void ArriveApp::update() {
 }
 
 void ArriveApp::draw() {
+    //hideCursor();
     gl::clear(Color{0.0f, 0.05f, 0.1f});
 
     // draw cursor (don't translate)
     gl::color(0.f, 0.f, 0.5f, 0.2f);
     //gl::drawSolidCircle(mCursor, 100.0f);
-
-    mUI.draw();
 
     {
         gl::ScopedModelMatrix modelMatrix;
@@ -153,7 +161,10 @@ void ArriveApp::draw() {
         gl::translate(-mOffset);
 
         mEcosystem.draw();
+        gl::drawSolidCircle(mDebugPoint, 10.0f);
     }
+
+    mUI.draw();  // UI not affected by world transforms
 
     mFramerate = std::round(getAverageFps());
     mParams.draw();

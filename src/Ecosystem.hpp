@@ -35,6 +35,8 @@ public:
     void mouseDrag(const vec2& mousePos);
     void mouseMove(const vec2& mousePos);
     void keyDown(KeyEvent event);
+    void addBarrier();
+    void removeBarrier();
     bool isFocused() const;
     Color mVehicleColor = Color{0.1f, 0.4f, 0.1f};
 
@@ -164,6 +166,17 @@ void Ecosystem::keyDown(KeyEvent event) {
     if (event.getChar() == cinder::app::KeyEvent::KEY_SPACE) {
         mBarriers.push_back(Barrier{0});
     }
+}
+
+void Ecosystem::addBarrier() {
+    int randX = randInt(10, 1890);
+    int randY = randInt(10, 1050);
+    mBarriers.push_back(Barrier{0, vec2{randX, randY}, vec2{randX + 50, randY}});
+}
+
+void Ecosystem::removeBarrier() {
+    if (mBarriers.empty()) { return; }
+    mBarriers.pop_back();
 }
 
 bool Ecosystem::isFocused() const {

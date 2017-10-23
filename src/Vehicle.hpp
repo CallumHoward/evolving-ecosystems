@@ -13,6 +13,7 @@
 #include "cinder/Rand.h"                // randFloat
 #include "cinder/CinderMath.h"          // M_PI, lmap, constrain
 #include "Particle.hpp"
+#include "Barrier.hpp"
 
 namespace ch {
 
@@ -65,12 +66,20 @@ private:
 };
 
 
-void Vehicle::update() {
+void Vehicle::update(std::vector<Barrier> barriers) {
     mVelocity += mAcceleration;  // update the velocity
     ch::limit(mVelocity, mMaxSpeed);
     if (mHistorySkip % 5 == 0) {
         mHistory.push_back(bPosition);
     }
+
+    // do barrier collision detection
+    for (const auto& barrier : barriers) {
+        if (barrier.hasCrossed(bPosition, bPosition + mVelocity)) {
+            return;
+        }
+    }
+
     bPosition += mVelocity;
     mAcceleration = vec2{0, 0};  // reset acceleration to 0 each cycle
 

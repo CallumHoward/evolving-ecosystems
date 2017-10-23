@@ -18,6 +18,7 @@ namespace ch {
     void setMagnitude(vec2& v, float len);
     vec2 safeNormalize(const vec2& v);
     void limit(vec2& v, float maxLength);
+    bool doIntersect(const vec2& p1, const vec2& q1, const vec2& p2, const vec2& q2);
 
     inline vec2 midpoint(const vec2& first, const vec2& second) {
         return (second - first) * 0.5f;
