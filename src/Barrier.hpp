@@ -6,7 +6,7 @@
 
 #include "cinder/app/App.h"             // MouseEvent
 #include "chGlobals.hpp"                // Tick
-#include "chUtils.hpp"                  // midpoint
+#include "chUtils.hpp"                  // midpoint, intersects, intersectionPoint
 #include "Particle.hpp"
 
 namespace ch {
@@ -23,7 +23,8 @@ public:
     void mouseMove(vec2 mousePos);
     bool isFocused() const;
 
-    bool hasCrossed(const vec2& oldPos, const vec2& newPos) const; //TODO
+    bool hasCrossed(const vec2& oldPos, const vec2& newPos) const;
+    vec2 intersectionPoint(const vec2& oldPos, const vec2& newPos) const;
 
     // inner class
     class EndPoint : public Particle {
@@ -147,15 +148,13 @@ bool Barrier::isFocused() const {
     return mFirst.isFocused() or mSecond.isFocused();
 }
 
-//bool hasCrossed(const vec2& oldPos, const vec2& newPos) const {
-//    return ;
-//}
+inline bool Barrier::hasCrossed(const vec2& oldPos, const vec2& newPos) const {
+    return intersects(oldPos, newPos, mFirst.getPosition(), mSecond.getPosition());
+}
 
-//vec2 ccw(const vec2& a, const vec2& b, const vec2& c) {
-//    // (C.y-A.y) * (B.x-A.x) > (B.y-A.y) * (C.x-A.x)
-//    return (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x);
-//}
-
+inline vec2 Barrier::intersectionPoint(const vec2& oldPos, const vec2& newPos) const {
+    return getIntersection(oldPos, newPos, mFirst.getPosition(), mSecond.getPosition());
+}
 
 } // namespace ch
 

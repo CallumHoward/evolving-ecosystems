@@ -130,7 +130,7 @@ void Ecosystem::updateVehicles() {
         }
 
         vehicle.arrive(nearestFoodRef->getPosition());
-        vehicle.update();
+        vehicle.update(mBarriers);
 
         // update ecosystem tick count
         ++mTickCount;

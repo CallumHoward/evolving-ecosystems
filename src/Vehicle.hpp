@@ -39,7 +39,8 @@ public:
             mHistory = boost::circular_buffer<vec2>{mHistorySize};
     }
 
-    void update() override;  // updates the position of the vehicle
+    void update(const std::vector<Barrier>& barriers);
+    void update() override { update(std::vector<Barrier>{}); }
     void draw() const override;
 
     void arrive(const vec2& target);
@@ -66,25 +67,29 @@ private:
 };
 
 
-void Vehicle::update(std::vector<Barrier> barriers) {
+// updates the position of the vehicle
+void Vehicle::update(const std::vector<Barrier>& barriers) {
     mVelocity += mAcceleration;  // update the velocity
     ch::limit(mVelocity, mMaxSpeed);
     if (mHistorySkip % 5 == 0) {
         mHistory.push_back(bPosition);
     }
 
+    // subtract energy expended
+    mEnergy -= 0.5f;  // as time passes
+    mEnergy -= 0.1f * ch::length(mAcceleration) * bSize;  // F = M * A
+
     // do barrier collision detection
     for (const auto& barrier : barriers) {
         if (barrier.hasCrossed(bPosition, bPosition + mVelocity)) {
+            bPosition = barrier.intersectionPoint(bPosition, bPosition + mVelocity);
+            mVelocity = -mVelocity;
             return;
         }
     }
 
     bPosition += mVelocity;
     mAcceleration = vec2{0, 0};  // reset acceleration to 0 each cycle
-
-    mEnergy -= 0.5f;  // as time passes
-    mEnergy -= 0.1f * ch::length(mAcceleration) * bSize;  // F = M * A
 }
 
 void Vehicle::draw() const {
