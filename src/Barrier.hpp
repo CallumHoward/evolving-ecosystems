@@ -25,6 +25,7 @@ public:
 
     bool hasCrossed(const vec2& oldPos, const vec2& newPos) const;
     vec2 intersectionPoint(const vec2& oldPos, const vec2& newPos) const;
+    vec2 reflectNormal(const vec2& incident) const;
 
     // inner class
     class EndPoint : public Particle {
@@ -154,6 +155,11 @@ inline bool Barrier::hasCrossed(const vec2& oldPos, const vec2& newPos) const {
 
 inline vec2 Barrier::intersectionPoint(const vec2& oldPos, const vec2& newPos) const {
     return getIntersection(oldPos, newPos, mFirst.getPosition(), mSecond.getPosition());
+}
+
+inline vec2 Barrier::reflectNormal(const vec2& incident) const {
+    const vec2 lineNormal = ch::normal(mFirst.getPosition(), mSecond.getPosition());
+    return glm::reflect(incident, safeNormalize(lineNormal));
 }
 
 } // namespace ch

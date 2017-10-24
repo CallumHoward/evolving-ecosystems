@@ -46,7 +46,7 @@ private:
     Tick mTickCount = 0;
     int mNumFood = 30;
     int mMaxNumFood = 30;
-    int mNumVehicles = 50;
+    int mNumVehicles = 5;
     Tick mFittestLifetime = 0;
     std::vector<Circle> mFood;
     std::vector<Vehicle> mVehicles;

@@ -62,16 +62,13 @@ vec2 hOrV(const vec2& v) {
 
 vec2 safeNormalize(const vec2& v) {
     const auto s = lengthSquared(v);
-    if (s <= 0) { return vec2{}; }
-    auto invL = glm::inversesqrt(s);
-    return v * invL;
+    return (s <= 0) ? vec2{} : v * glm::inversesqrt(s);
 }
 
 void limit(vec2& v, float maxLength) {
     const auto ls = lengthSquared(v);
     if ((ls > maxLength * maxLength) and (ls > 0)) {
-        float ratio = maxLength / glm::sqrt(ls);
-        v *= ratio;
+        v *= maxLength / glm::sqrt(ls);
     }
 }
 
@@ -79,6 +76,10 @@ void setMagnitude(vec2& v, float len) { v = safeNormalize(v) * len; }
 
 inline vec2 makeRandPoint() {
     return vec2{randFloat(getWindowWidth()), randFloat(getWindowHeight())};
+}
+
+inline vec2 normal(const vec2& a, const vec2& b) {
+    return vec2{b.y - a.y, -b.x + a.x};
 }
 
 // returns true if line segment 'p1q1' and 'p2q2' intersect

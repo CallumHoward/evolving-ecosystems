@@ -81,10 +81,17 @@ void Vehicle::update(const std::vector<Barrier>& barriers) {
 
     // do barrier collision detection
     for (const auto& barrier : barriers) {
+
         if (barrier.hasCrossed(bPosition, bPosition + mVelocity)) {
-            bPosition = barrier.intersectionPoint(bPosition, bPosition + mVelocity);
-            mVelocity = -mVelocity;
-            return;
+
+            const auto intersect = barrier.intersectionPoint(bPosition, bPosition + mVelocity);
+            const auto factor = length(mVelocity) * 0.9f;
+
+            // bounce off barrier
+            mVelocity = barrier.reflectNormal(intersect - bPosition);
+            bPosition = intersect + (mVelocity * 0.1f);
+
+            break;
         }
     }
 
