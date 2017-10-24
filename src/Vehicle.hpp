@@ -84,14 +84,14 @@ void Vehicle::update(const std::vector<Barrier>& barriers) {
 
         if (barrier.hasCrossed(bPosition, bPosition + mVelocity)) {
 
-            const auto intersect = barrier.intersectionPoint(bPosition, bPosition + mVelocity);
-            const auto factor = length(mVelocity) * 0.9f;
+            const auto intersect =
+                    barrier.intersectionPoint(bPosition, bPosition + mVelocity);
 
             // bounce off barrier
             mVelocity = barrier.reflectNormal(intersect - bPosition);
-            bPosition = intersect + (mVelocity * 0.1f);
+            bPosition = intersect + (mVelocity * 0.1f);  // extra nudge to prevent flip-flop
 
-            break;
+            break;  // assume colliding with a single barrier only
         }
     }
 
@@ -126,7 +126,7 @@ void Vehicle::arrive(const vec2& target) {
     vec2 desired = target - bPosition;
     const float d = ch::length(desired);
 
-    // scale within arbitrary damping within 100 pixels so that it arrives
+    // scale within arbitrary damping within 100 pixels so that it "arrives"
     const float proximity = 100.0f;
     if (d < proximity) {
         const float m = lmap(d, 0.0f, proximity, 0.0f, mMaxSpeed);
