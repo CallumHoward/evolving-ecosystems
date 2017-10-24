@@ -14,7 +14,7 @@
 #include "cinder/app/App.h"             // MouseEvent
 #include "sp/Grid.h"
 #include "sp/KdTree.h"
-#include "chUtils.hpp"                  // makeRandPoint
+#include "chUtils.hpp"                  // makeRandPoint, distance
 #include "chGlobals.hpp"                // Tick
 #include "Circle.hpp"
 #include "Vehicle.hpp"
@@ -42,6 +42,7 @@ public:
 
 private:
     void updateVehicles();
+    bool isOccluded(const Vehicle& v, const vec2& target);
 
     Tick mTickCount = 0;
     int mNumFood = 30;
@@ -97,6 +98,7 @@ void Ecosystem::update() {
 }
 
 void Ecosystem::updateVehicles() {
+
     for (auto& vehicle : mVehicles) {
         if (vehicle.isDead()) {
             // check how long it survived and if it broke the record
@@ -111,11 +113,46 @@ void Ecosystem::updateVehicles() {
             continue;
         }
 
-        float distanceSquared;
-        auto nn = mParticleSpatialStruct.nearestNeighborSearch(
-                vehicle.getPosition(), &distanceSquared);
-        Circle* nearestFoodRef = static_cast<Circle *>(nn->getData());
+        // find a target to seek
 
+        // in case a nearest neighbor can't be found
+        auto fallbackTarget = Circle{mTickCount, 0.0f, makeRandPoint()};
+        fallbackTarget.setActive(false);
+        fallbackTarget.setEnergy(0.0f);
+
+        Circle* nearestFoodRef = &fallbackTarget;
+        float distanceSquared = distance(vehicle.getPosition(), fallbackTarget.getPosition());
+
+        // optimistically do quick look for nearest neighbor
+        float optimisticDistanceSquared;
+        auto nn = mParticleSpatialStruct.nearestNeighborSearch(
+               vehicle.getPosition(), &optimisticDistanceSquared);
+        Circle* optimisticNearestFoodRef = static_cast<Circle *>(nn->getData());
+
+        // if it is within line of sight then optimistic is a good choice
+        if (not isOccluded(vehicle, nn->getPosition())) {
+            nearestFoodRef = optimisticNearestFoodRef;
+            distanceSquared = optimisticDistanceSquared;
+
+        } else {  // try and find another target
+            const auto neighbors = mParticleSpatialStruct.rangeSearch(
+                    vehicle.getPosition(), vehicle.getSightDist());
+
+            for (const auto& neighbor : neighbors) {
+                const auto node = neighbor.first;
+                const auto distSq = neighbor.second;
+
+                // if line of sight to neighbor is occluded, try another neighbor
+                if (isOccluded(vehicle, node->getPosition())) { continue; }
+
+                // a good target has been found, stop searching
+                nearestFoodRef = static_cast<Circle*>(node->getData());
+                distanceSquared = distSq;
+                break;
+            }
+        }
+
+        // carry out vehicle actions
         const auto size = vehicle.getSize();
         if (distanceSquared < size * size) {
             vehicle.eat(nearestFoodRef->getEnergy());
@@ -177,6 +214,14 @@ void Ecosystem::addBarrier() {
 void Ecosystem::removeBarrier() {
     if (mBarriers.empty()) { return; }
     mBarriers.pop_back();
+}
+
+bool Ecosystem::isOccluded(const Vehicle& v, const vec2& target) {
+    return ranges::any_of(mBarriers,
+          [&v, &target] (const Barrier& b) {
+              return b.hasCrossed(v.getPosition(), target);
+          });
+
 }
 
 bool Ecosystem::isFocused() const {

@@ -5,7 +5,6 @@
 #define VEHICLE_HPP
 
 #include <boost/circular_buffer.hpp>
-#include <range/v3/view.hpp>
 #include "chUtils.hpp"                  // limit, heading, setMagnitude, length
 #include "chGlobals.hpp"                // Tick
 #include "cinder/gl/gl.h"               // vec2
@@ -32,6 +31,7 @@ public:
         mMaxForce{0.8f},
         mMaxSpeed{40.0f},
         mMaxEnergy{100.0f},
+        mSightDist{100.0f},
         mHistorySkip{0},  // for spread length of tail
         mHistorySize{10} {
             mColor = c;
@@ -45,8 +45,9 @@ public:
 
     void arrive(const vec2& target);
     void eat(float energy);
-    bool isDead() { return mEnergy <= 0.0f; }
+    bool isDead() const { return mEnergy <= 0.0f; }
     void setColor(Color c) { mColor = c; }
+    float getSightDist() const { return mSightDist; }
 
     // we could add mass here if we want A = F / M
     void applyForce(vec2 force) { mAcceleration += force / (bSize / 3.0f); }
@@ -61,6 +62,7 @@ private:
     float mMaxForce;
     float mMaxSpeed;
     float mMaxEnergy;
+    float mSightDist;
     size_t mHistorySkip;
     size_t mHistorySize;
     boost::circular_buffer<vec2> mHistory;

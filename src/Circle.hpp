@@ -49,6 +49,7 @@ public:
 
     CType getType() { return mType; }
     constexpr float getEnergy() const { return mEnergy; }
+    void setEnergy(float energy) { mEnergy = energy; }
     bool isActive() const { return mActive; }
     void setActive(bool b) { mActive = b; }
 
