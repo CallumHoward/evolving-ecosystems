@@ -78,22 +78,21 @@ void Vehicle::update(const std::vector<Barrier>& barriers) {
     }
 
     // subtract energy expended
-    mEnergy -= 0.5f;  // as time passes
+    mEnergy -= 0.2f;  // as time passes
     mEnergy -= 0.1f * ch::length(mAcceleration) * bSize;  // F = M * A
 
     // do barrier collision detection
     for (const auto& barrier : barriers) {
+        const auto trajectory = bPosition + mVelocity;
 
-        if (barrier.hasCrossed(bPosition, bPosition + mVelocity)) {
-
-            const auto intersect =
-                    barrier.intersectionPoint(bPosition, bPosition + mVelocity);
+        if (barrier.hasCrossed(bPosition, trajectory)) {
+            const auto intersect = barrier.intersectionPoint(bPosition, trajectory);
 
             // bounce off barrier
             mVelocity = barrier.reflectNormal(intersect - bPosition);
-            bPosition = intersect + (mVelocity * 0.1f);  // extra nudge to prevent flip-flop
+            bPosition = intersect;// + (mVelocity * 0.1f);  // extra nudge to prevent flip-flop
 
-            break;  // assume colliding with a single barrier only
+            //break;  // assume colliding with a single barrier only
         }
     }
 

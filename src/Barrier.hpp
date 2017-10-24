@@ -48,6 +48,7 @@ public:
         }
 
         vec2 getPosition() const { return bPosition - mOffset; }
+        void setPosition(const vec2& pos) { bPosition = pos; }
 
         void mouseDown(const vec2& mousePos) {
             if (not contains(mousePos)) { return; }
@@ -80,18 +81,24 @@ public:
 private:
     EndPoint mFirst;
     EndPoint mSecond;
+    EndPoint mMidPoint;
 };
 
 Barrier::Barrier(Tick currentTick, const vec2& first = vec2{}, const vec2& second = vec2{}) :
-    Particle{5.0f, midpoint(first, second), currentTick},
-    mFirst{currentTick, bSize * 2.0f, first},
-    mSecond{currentTick, bSize * 2.0f, second} {
-        if (second == vec2{}) { mSecond = mFirst; }
+        Particle{5.0f, midpoint(first, second), currentTick},
+        mFirst{currentTick, bSize * 2.0f, first},
+        mSecond{currentTick, bSize * 2.0f, second},
+        mMidPoint{currentTick, bSize * 0.75f, first + 0.5f * (second - first)} {
+    if (second == vec2{}) { mSecond = mFirst; }
 }
 
 void Barrier::update() {
     mFirst.update();
     mSecond.update();
+    mMidPoint.update();
+    const auto mid = mFirst.getPosition() +
+            midpoint(mFirst.getPosition(), mSecond.getPosition());
+    mMidPoint.setPosition(mid);
 }
 
 void Barrier::draw() const {
@@ -115,6 +122,7 @@ void Barrier::draw() const {
 
     mFirst.draw();
     mSecond.draw();
+    mMidPoint.draw();
 }
 
 void Barrier::mouseDown(vec2 mousePos) {

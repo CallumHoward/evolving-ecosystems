@@ -7,8 +7,9 @@
 #include <cassert>
 #include <vector>
 #include <limits>                       // numeric_limits
-#include <algorithm>                    // generate
+#include <algorithm>                    // generate_n, sort
 #include <range/v3/algorithm/any_of.hpp>
+#include <range/v3/algorithm/sort.hpp>
 #include <boost/circular_buffer.hpp>
 #include "cinder/gl/gl.h"
 #include "cinder/app/App.h"             // MouseEvent
@@ -95,6 +96,10 @@ void Ecosystem::update() {
     for (auto& barrier : mBarriers) {
         barrier.update();
     }
+
+    // update ecosystem tick count
+    ++mTickCount;
+    assert(mTickCount != std::numeric_limits<Tick>::max());
 }
 
 void Ecosystem::updateVehicles() {
@@ -135,8 +140,14 @@ void Ecosystem::updateVehicles() {
             distanceSquared = optimisticDistanceSquared;
 
         } else {  // try and find another target
-            const auto neighbors = mParticleSpatialStruct.rangeSearch(
+            auto neighbors = mParticleSpatialStruct.rangeSearch(
                     vehicle.getPosition(), vehicle.getSightDist());
+
+            // order by smallest distance first
+            ranges::sort(neighbors,
+                    [] (const auto& lhs, const auto& rhs) {
+                        return lhs.second < rhs.second;
+                    });
 
             for (const auto& neighbor : neighbors) {
                 const auto node = neighbor.first;
@@ -168,10 +179,6 @@ void Ecosystem::updateVehicles() {
 
         vehicle.arrive(nearestFoodRef->getPosition());
         vehicle.update(mBarriers);
-
-        // update ecosystem tick count
-        ++mTickCount;
-        assert(mTickCount != std::numeric_limits<Tick>::max());
     }
 }
 
