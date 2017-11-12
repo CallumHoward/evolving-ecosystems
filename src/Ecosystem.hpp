@@ -43,7 +43,7 @@ public:
     void mouseDrag(const vec2& mousePos);
     void mouseMove(const vec2& mousePos);
     void keyDown(KeyEvent event);
-    void addBarrier();
+    void addBarrier(const vec2& pos);
     void removeBarrier();
     bool isFocused() const;
     void setMode(Mode m);
@@ -204,7 +204,13 @@ void Ecosystem::updateVehicles() {
 void Ecosystem::mouseDown(const vec2& mousePos) {
     switch (mMode) {
     case ADD_BARRIER:
+        //TODO check to connect other barriers
         for (auto& barrier : mBarriers) { barrier.mouseDown(mousePos); }
+
+        if (not ranges::any_of(mBarriers,
+                [] (const Barrier& b) { return b.isFocused(); })) {
+            addBarrier(mousePos);
+        }
         break;
     case REMOVE_BARRIER:
         for (auto& barrier : mBarriers) { barrier.mouseDown(mousePos); }
@@ -246,10 +252,8 @@ void Ecosystem::keyDown(KeyEvent event) {
     }
 }
 
-void Ecosystem::addBarrier() {
-    int randX = randInt(10, 1890);
-    int randY = randInt(10, 1050);
-    mBarriers.push_back(Barrier{0, vec2{randX, randY}, vec2{randX + 50, randY}});
+void Ecosystem::addBarrier(const vec2& pos) {
+    mBarriers.push_back(Barrier{0, vec2{pos.x - 100, pos.y}, vec2{pos.x + 100, pos.y}});
 }
 
 void Ecosystem::removeBarrier() {

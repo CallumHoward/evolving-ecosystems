@@ -143,12 +143,12 @@ void Barrier::mouseUp(vec2 mousePos) {
 void Barrier::mouseDrag(vec2 mousePos) {
     mousePos -= bPosition;
     mFirst.mouseDrag(mousePos);
-    if (mFirst.isFocused()) { return; }
+    //if (mFirst.isFocused()) { return; }
     mSecond.mouseDrag(mousePos);
 }
 
 void Barrier::mouseMove(vec2 mousePos) {
-    mousePos -= bPosition;
+    //mousePos -= bPosition;
     mFirst.mouseDrag(mousePos);
     mSecond.mouseDrag(mousePos);
 }

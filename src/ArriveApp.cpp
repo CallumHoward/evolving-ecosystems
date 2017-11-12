@@ -78,11 +78,11 @@ void ArriveApp::setup() {
     }
 
     mUI.addButton(rectangles.at(0),
-        std::bind(&ch::Ecosystem::addBarrier, &mEcosystem));
+            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::Ecosystem::ADD_BARRIER));
     mUI.addButton(rectangles.at(1),
-            std::bind(&ch::Ecosystem::removeBarrier, &mEcosystem));
+            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::Ecosystem::REMOVE_BARRIER));
     mUI.addButton(rectangles.at(2),
-        std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::Ecosystem::ADD_FOOD));
+            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::Ecosystem::ADD_FOOD));
 
     // debug gui setup
     const auto windowCaption = "Parameters";
@@ -102,11 +102,11 @@ void ArriveApp::prepareSettings(ArriveApp::Settings *settings) {
 void ArriveApp::mouseDown(MouseEvent event) {
     const vec2 pos = event.getPos();
 
-    mEcosystem.mouseDown(pos + mOffset);
-    if (mEcosystem.isFocused()) { return; }
-
     mUI.mouseDown(pos);
     if (mUI.isFocused()) { return; }
+
+    mEcosystem.mouseDown(pos + mOffset);
+    if (mEcosystem.isFocused()) { return; }
 
     mLastPos = event.getPos();
 }
@@ -119,15 +119,15 @@ void ArriveApp::mouseUp(MouseEvent event) {
 }
 
 void ArriveApp::mouseDrag(MouseEvent event) {
+    // do nothing if draging in UI
+    if (mUI.isFocused()) { return; }
+
     const vec2 pos = event.getPos();
     mDebugPoint = pos + mOffset;
 
     mEcosystem.mouseDrag(pos + mOffset);
     //mEcosystem.mouseDrag(pos);
     if (mEcosystem.isFocused()) { return; }
-
-    // do nothing if draging in UI
-    if (mUI.isFocused()) { return; }
 
     mOffset += (mLastPos - pos) / mZoom;
     mLastPos = pos;
