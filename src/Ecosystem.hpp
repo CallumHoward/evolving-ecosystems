@@ -9,6 +9,7 @@
 #include <limits>                       // numeric_limits
 #include <algorithm>                    // generate_n, sort
 #include <range/v3/algorithm/any_of.hpp>
+#include <range/v3/algorithm/min_element.hpp>
 #include <range/v3/algorithm/sort.hpp>
 #include <boost/circular_buffer.hpp>
 #include "cinder/gl/gl.h"
@@ -28,6 +29,12 @@ using namespace ranges;
 
 class Ecosystem {
 public:
+    enum Mode {
+        ADD_FOOD,
+        ADD_BARRIER,
+        REMOVE_BARRIER
+    };
+
     void setup();
     void update();
     void draw() const;
@@ -39,21 +46,28 @@ public:
     void addBarrier();
     void removeBarrier();
     bool isFocused() const;
+    void setMode(Mode m);
+    Mode getMode() const { return mMode; }
+
     Color mVehicleColor = Color{0.1f, 0.4f, 0.1f};
 
 private:
     void updateVehicles();
     bool isOccluded(const Vehicle& v, const vec2& target);
+    vec2 chooseSpawn() const;
 
+    Mode mMode = ADD_FOOD;
     Tick mTickCount = 0;
     int mNumFood = 30;
     int mMaxNumFood = 30;
-    int mNumVehicles = 5;
+    int mNumVehicles = 50;
+    int mMaxFoodSpawns = 10;
     Tick mFittestLifetime = 0;
     std::vector<Circle> mFood;
     std::vector<Vehicle> mVehicles;
     std::vector<Barrier> mBarriers;
     boost::circular_buffer<Circle> mCorpses;
+    boost::circular_buffer<vec2> mFoodSpawns;
 
     //using SpatialStruct = sp::Grid2<Particle*>;
     using SpatialStruct = sp::KdTree2<Particle*>;
@@ -63,6 +77,9 @@ private:
 
 
 void Ecosystem::setup() {
+    mCorpses = boost::circular_buffer<Circle>{30};
+    mFoodSpawns = boost::circular_buffer<vec2>{10};
+    mBarriers = std::vector<Barrier>{};
 
     std::generate_n(std::back_inserter(mFood), mNumFood,
             [this]{ return Circle{0, 3.0f, makeRandPoint()}; });
@@ -70,9 +87,7 @@ void Ecosystem::setup() {
     std::generate_n(std::back_inserter(mVehicles), mNumVehicles,
             [this]{ return Vehicle{0, makeRandPoint(), mVehicleColor}; });
 
-    mCorpses = boost::circular_buffer<Circle>{30};
-
-    mBarriers = std::vector<Barrier>{};
+    std::generate_n(std::back_inserter(mFoodSpawns), mMaxFoodSpawns, makeRandPoint);
 
     // make a sample barrier
     //mBarriers.push_back(Barrier{0});
@@ -169,7 +184,11 @@ void Ecosystem::updateVehicles() {
             vehicle.eat(nearestFoodRef->getEnergy());
             switch (nearestFoodRef->getType()) {
             case Circle::FOOD:
-                *nearestFoodRef = Circle{mTickCount, 3.0f, makeRandPoint()};
+                if (mMode == ADD_FOOD and not mFoodSpawns.empty()) {
+                    *nearestFoodRef = Circle{mTickCount, 3.0f, addNoise(chooseSpawn(), 200.0f)};
+                } else {
+                    *nearestFoodRef = Circle{mTickCount, 3.0f, makeRandPoint()};
+                }
                 break;
             case Circle::CORPSE:
                 nearestFoodRef->setActive(false);
@@ -183,8 +202,23 @@ void Ecosystem::updateVehicles() {
 }
 
 void Ecosystem::mouseDown(const vec2& mousePos) {
-    for (auto& barrier : mBarriers) {
-        barrier.mouseDown(mousePos);
+    switch (mMode) {
+    case ADD_BARRIER:
+        for (auto& barrier : mBarriers) { barrier.mouseDown(mousePos); }
+        break;
+    case REMOVE_BARRIER:
+        for (auto& barrier : mBarriers) { barrier.mouseDown(mousePos); }
+        break;
+    case ADD_FOOD:
+        // add to target locations around which food spawns
+        mFoodSpawns.push_back(mousePos);
+        // find oldest food
+        auto found = min_element(mFood,
+                [] (const Circle& lhs, const Circle& rhs) {
+                    return lhs.getBirthTick() < rhs.getBirthTick();
+                });
+        // add food at mouse, replace oldest food
+        *found = Circle{mTickCount, 3.0f, mousePos};
     }
 }
 
@@ -223,12 +257,20 @@ void Ecosystem::removeBarrier() {
     mBarriers.pop_back();
 }
 
+void Ecosystem::setMode(Mode m) {
+    mMode = m;
+}
+
 bool Ecosystem::isOccluded(const Vehicle& v, const vec2& target) {
     return ranges::any_of(mBarriers,
           [&v, &target] (const Barrier& b) {
               return b.hasCrossed(v.getPosition(), target);
           });
 
+}
+
+vec2 Ecosystem::chooseSpawn() const {
+    return mFoodSpawns.at(biasRandInt(0, static_cast<int>(mFoodSpawns.size()), 2.0f));
 }
 
 bool Ecosystem::isFocused() const {
@@ -242,6 +284,7 @@ void Ecosystem::draw() const {
     for (const auto& barrier : mBarriers) { barrier.draw(); }
 }
 
-}
+
+} // namespace ch
 
 #endif

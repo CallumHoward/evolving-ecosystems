@@ -64,15 +64,32 @@ void ArriveApp::setup() {
     mEcosystem.setup();
     mUI = ch::UserInterface{};
     const auto windowWidth = static_cast<float>(getWindowWidth());
-    mUI.addButton(Rectf{windowWidth - 200, 0, windowWidth, 200}, std::bind(&ch::Ecosystem::addBarrier, &mEcosystem));
-    mUI.addButton(Rectf{windowWidth - 200, 220, windowWidth, 420}, std::bind(&ch::Ecosystem::removeBarrier, &mEcosystem));
+    const auto buttonWidth = 200;
+    const auto buttonHeight = 200;
+    const auto buttonSpacing = 20;
+    const auto containHeight = buttonHeight + buttonSpacing;
+    const auto numRectangles = 3;
+
+    auto rectangles = std::vector<Rectf>{};
+    for (auto i = 0; i < numRectangles; ++i) {
+        rectangles.emplace_back(
+                windowWidth - buttonWidth, i * containHeight,
+                windowWidth, (i * containHeight) + buttonHeight);
+    }
+
+    mUI.addButton(rectangles.at(0),
+        std::bind(&ch::Ecosystem::addBarrier, &mEcosystem));
+    mUI.addButton(rectangles.at(1),
+            std::bind(&ch::Ecosystem::removeBarrier, &mEcosystem));
+    mUI.addButton(rectangles.at(2),
+        std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::Ecosystem::ADD_FOOD));
 
     // debug gui setup
     const auto windowCaption = "Parameters";
     mParams = params::InterfaceGl{windowCaption, ivec2{100, 200}};
-    mParams.addParam("framerate", &mFramerate, "");
-    mParams.addParam("Vehicle Color", &ch::sGreen, "");
-    mParams.addParam("Vehicle Bright Color", &ch::sBright, "");
+    mParams.addParam("framerate", &mFramerate, true);
+    mParams.addParam("Vehicle Color", &ch::sGreen, false);
+    mParams.addParam("Vehicle Bright Color", &ch::sBright, false);
 
 }
 
@@ -85,7 +102,7 @@ void ArriveApp::prepareSettings(ArriveApp::Settings *settings) {
 void ArriveApp::mouseDown(MouseEvent event) {
     const vec2 pos = event.getPos();
 
-    mEcosystem.mouseDown(pos);
+    mEcosystem.mouseDown(pos + mOffset);
     if (mEcosystem.isFocused()) { return; }
 
     mUI.mouseDown(pos);
@@ -161,7 +178,7 @@ void ArriveApp::draw() {
         gl::translate(-mOffset);
 
         mEcosystem.draw();
-        gl::drawSolidCircle(mDebugPoint, 10.0f);
+        //gl::drawSolidCircle(mDebugPoint, 10.0f);
     }
 
     mUI.draw();  // UI not affected by world transforms

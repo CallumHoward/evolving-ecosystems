@@ -78,6 +78,15 @@ inline vec2 makeRandPoint() {
     return vec2{randFloat(getWindowWidth()), randFloat(getWindowHeight())};
 }
 
+inline vec2 addNoise(const vec2& p, float noise) {
+    return p + vec2{randFloat(-noise, noise), randFloat(-noise, noise)};
+}
+
+// larger bias (<1) favours smaller values
+inline int biasRandInt(int min, int max, float bias) {
+    return min + ((max - min) * (1 - pow(randFloat(0.0f, 1.0f), bias)));
+}
+
 inline vec2 normal(const vec2& a, const vec2& b) {
     return vec2{b.y - a.y, -b.x + a.x};
 }
