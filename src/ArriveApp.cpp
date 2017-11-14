@@ -7,6 +7,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
 
+#include "chGlobals.hpp"
 #include "UserInterface.hpp"
 #include "Ecosystem.hpp"
 
@@ -43,6 +44,7 @@ private:
 
     // debug gui
     int mFramerate;
+    int mFittestLifetime;
     params::InterfaceGl mParams;
 
     vec2 mDebugPoint;
@@ -87,7 +89,8 @@ void ArriveApp::setup() {
     // debug gui setup
     const auto windowCaption = "Parameters";
     mParams = params::InterfaceGl{windowCaption, ivec2{100, 200}};
-    mParams.addParam("framerate", &mFramerate, true);
+    mParams.addParam("Framerate", &mFramerate, true);
+    mParams.addParam("Fittest Lifetime", &mFittestLifetime, true);
     mParams.addParam("Vehicle Color", &ch::sGreen, false);
     mParams.addParam("Vehicle Bright Color", &ch::sBright, false);
 
@@ -156,6 +159,8 @@ void ArriveApp::keyDown(KeyEvent event) {
 void ArriveApp::update() {
     mEcosystem.update();
     mUI.update();
+
+    mFittestLifetime = static_cast<int>(mEcosystem.getFittestLifetime());
 }
 
 void ArriveApp::draw() {

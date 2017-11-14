@@ -43,6 +43,7 @@ public:
     bool isFocused() const;
     void setMode(Mode m);
     Mode getMode() const { return mMode; }
+    Tick getFittestLifetime() const { return mFittestLifetime; }
 
     Color mVehicleColor = Color{0.1f, 0.4f, 0.1f};
 
