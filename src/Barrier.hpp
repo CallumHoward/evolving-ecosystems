@@ -100,6 +100,10 @@ public:
             gl::drawSolidCircle(bPosition - mOffset, size);
             gl::color(mOutline);
             gl::drawStrokedCircle(bPosition - mOffset, size, 1.0f);
+            gl::color(ColorA{0.8f, 0.8f, 0.8f, 0.8f});
+            const auto c = bPosition - mOffset;
+            const auto offset = vec2{bSize, 4.0f};
+            gl::drawSolidRect(Rectf{c - offset, c + offset});
         }
 
         vec2 getPosition() const { return bPosition - mOffset; }
