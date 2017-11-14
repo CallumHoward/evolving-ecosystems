@@ -78,11 +78,11 @@ void ArriveApp::setup() {
     }
 
     mUI.addButton(rectangles.at(0),
-            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::Ecosystem::ADD_BARRIER));
+            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::ADD_BARRIER));
     mUI.addButton(rectangles.at(1),
-            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::Ecosystem::REMOVE_BARRIER));
+            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::REMOVE_BARRIER));
     mUI.addButton(rectangles.at(2),
-            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::Ecosystem::ADD_FOOD));
+            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::ADD_FOOD));
 
     // debug gui setup
     const auto windowCaption = "Parameters";

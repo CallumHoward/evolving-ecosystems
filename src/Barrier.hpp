@@ -21,7 +21,9 @@ public:
     void mouseUp(vec2 mousePos);
     void mouseDrag(vec2 mousePos);
     void mouseMove(vec2 mousePos);
+    void setMode(ch::Mode mode);
     bool isFocused() const;
+    bool isActive() const { return mActive; }
 
     bool hasCrossed(const vec2& oldPos, const vec2& newPos) const;
     vec2 intersectionPoint(const vec2& oldPos, const vec2& newPos) const;
@@ -40,7 +42,7 @@ public:
 
         void draw() const override {
             if (not mActive) { return; }
-            const auto size = mMouseOver ? 2.0f * bSize : bSize;
+            const auto size = mMouseOver or mTouchMode ? 2.0f * bSize : bSize;
             gl::color(mFill);
             gl::drawSolidCircle(bPosition - mOffset, size);
             gl::color(mOutline);
@@ -71,26 +73,82 @@ public:
 
         bool isFocused() const { return mMouseOver; }
 
+        void setTouchMode(bool active = true) { mTouchMode = active; }
+
     private:
-        bool mActive;
-        bool mMouseOver;
+        bool mActive = true;
+        bool mMouseOver = true;
+        bool mTouchMode = false;  // touch input and mode is ADD_FOOD
         vec2 mOffset, mLastPos;
+        Color mFill, mOutline;
+    };
+
+    class MidPoint : public Particle {
+    public:
+        MidPoint(Tick currentTick, float size = 0.0f, const vec2& position = vec2{}) :
+                Particle{size, position, currentTick}, mActive{true}, mMouseOver{true} {
+            mFill = ColorA{0.5f, 0.0f, 0.0f, 0.3};
+            mOutline = ColorA{0.6f, 0.1f, 0.1f, 0.8};
+        }
+
+        void update() override {};
+
+        void draw() const override {
+            if (not mActive or not mVisible) { return; }
+            const auto size = 2.0f * bSize;
+            gl::color(mFill);
+            gl::drawSolidCircle(bPosition - mOffset, size);
+            gl::color(mOutline);
+            gl::drawStrokedCircle(bPosition - mOffset, size, 1.0f);
+        }
+
+        vec2 getPosition() const { return bPosition - mOffset; }
+        void setPosition(const vec2& pos) { bPosition = pos; }
+
+        void mouseDown(const vec2& mousePos) {
+            if (not contains(mousePos)) { return; }
+            mMouseOver = true;
+        }
+
+        void mouseUp(const vec2& mousePos, const vec2& other) {
+            if (not mMouseOver or not mVisible) { return; }
+            mMouseOver = false;
+            if (not contains(mousePos)) { return; }
+            mActive = false;
+        }
+
+        void mouseDrag(const vec2& mousePos) {
+            if (not mMouseOver) { return; }
+        }
+
+        bool isFocused() const { return mMouseOver; }
+
+        bool shouldRemove() const { return not mActive; }
+
+        void setVisible(bool visible = true) { mVisible = visible; };
+
+    private:
+        bool mActive = true;
+        bool mVisible = false;
+        bool mMouseOver;
+        vec2 mOffset;
         Color mFill, mOutline;
     };
 
 private:
     EndPoint mFirst;
     EndPoint mSecond;
-    EndPoint mMidPoint;
+    MidPoint mMidPoint;
     vec2 mOffset, mLastPos;
-    bool mIsPlaced = false;
+    bool mPlaced = false;
+    bool mActive = true;
 };
 
 Barrier::Barrier(Tick currentTick, const vec2& first = vec2{}, const vec2& second = vec2{}) :
         Particle{5.0f, midpoint(first, second), currentTick},
         mFirst{currentTick, bSize * 2.0f, first},
         mSecond{currentTick, bSize * 2.0f, second},
-        mMidPoint{currentTick, bSize * 0.75f, first + 0.5f * (second - first)} {
+        mMidPoint{currentTick, bSize * 2.0f, first + 0.5f * (second - first)} {
     if (second == vec2{}) { mSecond = mFirst; }
 }
 
@@ -104,6 +162,7 @@ void Barrier::update() {
 }
 
 void Barrier::draw() const {
+    if (not mActive) { return; }
     gl::ScopedModelMatrix modelMatrix;
     gl::translate(bPosition - mOffset);
 
@@ -124,7 +183,7 @@ void Barrier::draw() const {
 
     mFirst.draw();
     mSecond.draw();
-    //mMidPoint.draw();
+    mMidPoint.draw();
 }
 
 void Barrier::mouseDown(vec2 mousePos) {
@@ -146,7 +205,8 @@ void Barrier::mouseUp(vec2 mousePos) {
     mMidPoint.mouseUp(mousePos, mMidPoint.getPosition());
     bPosition -= mOffset;
     mOffset = vec2{};
-    mIsPlaced = true;
+    mPlaced = true;
+    if (mMidPoint.shouldRemove()) { mActive = false; }
 }
 
 void Barrier::mouseDrag(vec2 mousePos) {
@@ -155,7 +215,7 @@ void Barrier::mouseDrag(vec2 mousePos) {
     //    mLastPos = bPosition;
     //}
     mousePos -= bPosition;
-    if (not mIsPlaced) { return; }
+    if (not mPlaced) { return; }
     mFirst.mouseDrag(mousePos);
     if (mFirst.isFocused()) { return; }
     mSecond.mouseDrag(mousePos);
@@ -171,6 +231,25 @@ void Barrier::mouseMove(vec2 mousePos) {
 
 bool Barrier::isFocused() const {
     return mFirst.isFocused() or mSecond.isFocused() or mMidPoint.isFocused();
+}
+
+void Barrier::setMode(ch::Mode mode) {
+    switch (mode) {
+    case ADD_BARRIER:
+        mFirst.setTouchMode(true);
+        mSecond.setTouchMode(true);
+        mMidPoint.setVisible(false);
+        break;
+    case REMOVE_BARRIER:
+        mFirst.setTouchMode(false);
+        mSecond.setTouchMode(false);
+        mMidPoint.setVisible(true);
+        break;
+    default:
+        mFirst.setTouchMode(false);
+        mSecond.setTouchMode(false);
+        mMidPoint.setVisible(false);
+    }
 }
 
 inline bool Barrier::hasCrossed(const vec2& oldPos, const vec2& newPos) const {

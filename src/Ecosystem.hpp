@@ -10,6 +10,7 @@
 #include <algorithm>                    // generate_n, sort
 #include <range/v3/algorithm/any_of.hpp>
 #include <range/v3/algorithm/min_element.hpp>
+#include <range/v3/algorithm/remove_if.hpp>
 #include <range/v3/algorithm/sort.hpp>
 #include <boost/circular_buffer.hpp>
 #include "cinder/gl/gl.h"
@@ -29,12 +30,6 @@ using namespace ranges;
 
 class Ecosystem {
 public:
-    enum Mode {
-        ADD_FOOD,
-        ADD_BARRIER,
-        REMOVE_BARRIER
-    };
-
     void setup();
     void update();
     void draw() const;
@@ -109,8 +104,13 @@ void Ecosystem::update() {
     updateVehicles();
 
     for (auto& barrier : mBarriers) {
+        barrier.setMode(mMode);
         barrier.update();
     }
+
+    const auto to_erase = remove_if(mBarriers,
+            [](const auto& barrier) { return not barrier.isActive(); });
+    if (to_erase != std::end(mBarriers)) { mBarriers.erase(to_erase); }
 
     // update ecosystem tick count
     ++mTickCount;
