@@ -82,6 +82,8 @@ private:
     EndPoint mFirst;
     EndPoint mSecond;
     EndPoint mMidPoint;
+    vec2 mOffset, mLastPos;
+    bool mIsPlaced = false;
 };
 
 Barrier::Barrier(Tick currentTick, const vec2& first = vec2{}, const vec2& second = vec2{}) :
@@ -103,7 +105,7 @@ void Barrier::update() {
 
 void Barrier::draw() const {
     gl::ScopedModelMatrix modelMatrix;
-    gl::translate(bPosition);
+    gl::translate(bPosition - mOffset);
 
     const auto translation = mSecond.getPosition() - mFirst.getPosition();
     const auto perpendicular = safeNormalize(vec2{-translation.y, translation.x});
@@ -122,14 +124,17 @@ void Barrier::draw() const {
 
     mFirst.draw();
     mSecond.draw();
-    mMidPoint.draw();
+    //mMidPoint.draw();
 }
 
 void Barrier::mouseDown(vec2 mousePos) {
+    mLastPos = mousePos;
     mousePos -= bPosition;
     mFirst.mouseDown(mousePos);
-    if (isFocused()) { return; }
+    if (mFirst.isFocused()) { return; }
     mSecond.mouseDown(mousePos);
+    if (mSecond.isFocused()) { return; }
+    mMidPoint.mouseDown(mousePos);
 }
 
 void Barrier::mouseUp(vec2 mousePos) {
@@ -138,13 +143,24 @@ void Barrier::mouseUp(vec2 mousePos) {
     mousePos -= bPosition;
     mFirst.mouseUp(mousePos, mSecond.getPosition());
     mSecond.mouseUp(mousePos, mFirst.getPosition());
+    mMidPoint.mouseUp(mousePos, mMidPoint.getPosition());
+    bPosition -= mOffset;
+    mOffset = vec2{};
+    mIsPlaced = true;
 }
 
 void Barrier::mouseDrag(vec2 mousePos) {
+    //if (mMidPoint.isFocused()) {
+    //    mOffset += (mLastPos - mousePos);
+    //    mLastPos = bPosition;
+    //}
     mousePos -= bPosition;
+    if (not mIsPlaced) { return; }
     mFirst.mouseDrag(mousePos);
-    //if (mFirst.isFocused()) { return; }
+    if (mFirst.isFocused()) { return; }
     mSecond.mouseDrag(mousePos);
+    if (mSecond.isFocused()) { return; }
+    //mMidPoint.mouseDrag(mousePos);
 }
 
 void Barrier::mouseMove(vec2 mousePos) {
@@ -154,15 +170,17 @@ void Barrier::mouseMove(vec2 mousePos) {
 }
 
 bool Barrier::isFocused() const {
-    return mFirst.isFocused() or mSecond.isFocused();
+    return mFirst.isFocused() or mSecond.isFocused() or mMidPoint.isFocused();
 }
 
 inline bool Barrier::hasCrossed(const vec2& oldPos, const vec2& newPos) const {
-    return intersects(oldPos, newPos, mFirst.getPosition(), mSecond.getPosition());
+    return intersects(oldPos, newPos,
+            bPosition + mFirst.getPosition(), bPosition + mSecond.getPosition());
 }
 
 inline vec2 Barrier::intersectionPoint(const vec2& oldPos, const vec2& newPos) const {
-    return getIntersection(oldPos, newPos, mFirst.getPosition(), mSecond.getPosition());
+    return getIntersection(oldPos, newPos,
+            bPosition + mFirst.getPosition(), bPosition + mSecond.getPosition());
 }
 
 inline vec2 Barrier::reflectNormal(const vec2& incident) const {
