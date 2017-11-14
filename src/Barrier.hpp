@@ -33,7 +33,7 @@ public:
     class EndPoint : public Particle {
     public:
         EndPoint(Tick currentTick, float size = 0.0f, const vec2& position = vec2{}) :
-                Particle{size, position, currentTick}, mActive{true}, mMouseOver{true} {
+                Particle{size, position, currentTick}, mActive{true}, mMouseOver{false} {
             mFill = ColorA{0.5f, 0.5f, 0.0f, 0.3};
             mOutline = ColorA{0.6f, 0.6f, 0.1f, 0.8};
         }
@@ -53,7 +53,7 @@ public:
         void setPosition(const vec2& pos) { bPosition = pos; }
 
         void mouseDown(const vec2& mousePos) {
-            if (not contains(mousePos)) { return; }
+            if (not contains(mousePos, 2.0f)) { return; }
             mMouseOver = true;
             mLastPos = mousePos;
         }
@@ -77,7 +77,7 @@ public:
 
     private:
         bool mActive = true;
-        bool mMouseOver = true;
+        bool mMouseOver = false;
         bool mTouchMode = false;  // touch input and mode is ADD_FOOD
         vec2 mOffset, mLastPos;
         Color mFill, mOutline;
@@ -86,7 +86,7 @@ public:
     class MidPoint : public Particle {
     public:
         MidPoint(Tick currentTick, float size = 0.0f, const vec2& position = vec2{}) :
-                Particle{size, position, currentTick}, mActive{true}, mMouseOver{true} {
+                Particle{size, position, currentTick}, mActive{true}, mMouseOver{false} {
             mFill = ColorA{0.5f, 0.0f, 0.0f, 0.3};
             mOutline = ColorA{0.6f, 0.1f, 0.1f, 0.8};
         }
@@ -106,14 +106,14 @@ public:
         void setPosition(const vec2& pos) { bPosition = pos; }
 
         void mouseDown(const vec2& mousePos) {
-            if (not contains(mousePos)) { return; }
+            if (not contains(mousePos, 2.0f)) { return; }
             mMouseOver = true;
         }
 
         void mouseUp(const vec2& mousePos, const vec2& other) {
             if (not mMouseOver or not mVisible) { return; }
             mMouseOver = false;
-            if (not contains(mousePos)) { return; }
+            if (not contains(mousePos, 2.0f)) { return; }
             mActive = false;
         }
 
@@ -130,7 +130,7 @@ public:
     private:
         bool mActive = true;
         bool mVisible = false;
-        bool mMouseOver;
+        bool mMouseOver = false;
         vec2 mOffset;
         Color mFill, mOutline;
     };

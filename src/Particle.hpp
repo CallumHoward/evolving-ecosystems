@@ -23,7 +23,9 @@ public:
     vec2 getPosition() const { return bPosition; }
     float getSize() const { return bSize; }
     Tick getBirthTick() const { return bBirthTick; }
-    bool contains(const vec2& point) const { return distance(bPosition, point) < bSize; }
+    bool contains(const vec2& point, float boundaryMultiplier = 1.0f) const {
+        return distance(bPosition, point) < bSize * boundaryMultiplier;
+    }
 
 protected:
     vec2 bPosition;

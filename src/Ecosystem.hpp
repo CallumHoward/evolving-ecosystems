@@ -207,7 +207,7 @@ void Ecosystem::mouseDown(const vec2& mousePos) {
         //TODO check to connect other barriers
         for (auto& barrier : mBarriers) { barrier.mouseDown(mousePos); }
 
-        if (not ranges::any_of(mBarriers,
+        if (not any_of(mBarriers,
                 [] (const Barrier& b) { return b.isFocused(); })) {
             addBarrier(mousePos);
         }
