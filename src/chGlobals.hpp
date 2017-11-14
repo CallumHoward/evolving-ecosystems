@@ -9,6 +9,7 @@ namespace ch {
     using Tick = unsigned long;  // big enough to last for more than 2 years
 
     enum Mode {
+        PAN_VIEW,
         ADD_FOOD,
         ADD_BARRIER,
         REMOVE_BARRIER

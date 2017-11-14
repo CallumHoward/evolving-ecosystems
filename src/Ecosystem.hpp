@@ -51,7 +51,7 @@ private:
     bool isOccluded(const Vehicle& v, const vec2& target);
     vec2 chooseSpawn() const;
 
-    Mode mMode = ADD_FOOD;
+    Mode mMode = PAN_VIEW;
     Tick mTickCount = 0;
     int mNumFood = 30;
     int mMaxNumFood = 30;
@@ -101,6 +101,15 @@ void Ecosystem::update() {
         mParticleSpatialStruct.insert(particle.getPosition(), &particle);
     }
 
+    // find and replace oldest food to keep circulation going
+    if (randFloat(0.0f, 1.0f) < 0.016f) {
+        const auto found = min_element(mFood,
+                [] (const Circle& lhs, const Circle& rhs) {
+                    return lhs.getBirthTick() < rhs.getBirthTick();
+                });
+        *found = Circle{mTickCount, 3.0f, addNoise(chooseSpawn(), 180.0f)};
+    }
+
     updateVehicles();
 
     for (auto& barrier : mBarriers) {
@@ -126,7 +135,10 @@ void Ecosystem::updateVehicles() {
             if (lifetime > mFittestLifetime) { mFittestLifetime = lifetime; }
 
             // place a corpse at its last position
-            mCorpses.push_back(Circle{mTickCount, 5.0f, vehicle.getPosition(), Circle::CORPSE});
+            if (mTickCount - vehicle.getBirthTick() > 500) {
+                mCorpses.push_back(
+                        Circle{mTickCount, 5.0f, vehicle.getPosition(), Circle::CORPSE});
+            }
 
             // spawn a new vehicle in its place
             vehicle = Vehicle{mTickCount, makeRandPoint(), mVehicleColor};
@@ -184,8 +196,8 @@ void Ecosystem::updateVehicles() {
             vehicle.eat(nearestFoodRef->getEnergy());
             switch (nearestFoodRef->getType()) {
             case Circle::FOOD:
-                if (mMode == ADD_FOOD and not mFoodSpawns.empty()) {
-                    *nearestFoodRef = Circle{mTickCount, 3.0f, addNoise(chooseSpawn(), 200.0f)};
+                if (not mFoodSpawns.empty()) {
+                    *nearestFoodRef = Circle{mTickCount, 3.0f, addNoise(chooseSpawn(), 180.0f)};
                 } else {
                     *nearestFoodRef = Circle{mTickCount, 3.0f, makeRandPoint()};
                 }
@@ -216,15 +228,20 @@ void Ecosystem::mouseDown(const vec2& mousePos) {
         for (auto& barrier : mBarriers) { barrier.mouseDown(mousePos); }
         break;
     case ADD_FOOD:
-        // add to target locations around which food spawns
-        mFoodSpawns.push_back(mousePos);
-        // find oldest food
-        auto found = min_element(mFood,
-                [] (const Circle& lhs, const Circle& rhs) {
-                    return lhs.getBirthTick() < rhs.getBirthTick();
-                });
-        // add food at mouse, replace oldest food
-        *found = Circle{mTickCount, 3.0f, mousePos};
+        {
+            // add to target locations around which food spawns
+            mFoodSpawns.push_back(mousePos);
+            // find oldest food
+            const auto found = min_element(mFood,
+                    [] (const Circle& lhs, const Circle& rhs) {
+                        return lhs.getBirthTick() < rhs.getBirthTick();
+                    });
+            // add food at mouse, replace oldest food
+            *found = Circle{mTickCount, 3.0f, mousePos};
+            break;
+        }
+    default:
+        break;
     }
 }
 
@@ -274,7 +291,7 @@ bool Ecosystem::isOccluded(const Vehicle& v, const vec2& target) {
 }
 
 vec2 Ecosystem::chooseSpawn() const {
-    return mFoodSpawns.at(biasRandInt(0, static_cast<int>(mFoodSpawns.size()), 2.0f));
+    return mFoodSpawns.at(biasRandInt(0, static_cast<int>(mFoodSpawns.size()), 1.5f));
 }
 
 bool Ecosystem::isFocused() const {
@@ -282,6 +299,13 @@ bool Ecosystem::isFocused() const {
 }
 
 void Ecosystem::draw() const {
+    // draw food spawn areas
+    gl::color(ColorA{0.1f, 0.1f, 0.6f, 0.3f});
+    const auto offset = vec2{5.0f, 5.0f};
+    for (const auto& spawn : mFoodSpawns) {
+        cinder::gl::drawSolidRect(Rectf{spawn - offset, spawn + offset});
+    }
+
     for (const auto& corpse : mCorpses) { corpse.draw(); }
     for (const auto& food : mFood) { food.draw(); }
     for (const auto& vehicle : mVehicles) { vehicle.draw(); }
