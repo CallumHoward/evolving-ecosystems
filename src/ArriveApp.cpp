@@ -9,6 +9,7 @@
 
 #include "chGlobals.hpp"
 #include "UserInterface.hpp"
+#include "Background.hpp"
 #include "Ecosystem.hpp"
 
 using namespace ci;
@@ -49,6 +50,7 @@ private:
 
     vec2 mDebugPoint;
 
+    ch::Background mBackground;
     ch::Ecosystem mEcosystem;
     ch::UserInterface mUI;
 };
@@ -85,6 +87,8 @@ void ArriveApp::setup() {
             std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::REMOVE_BARRIER));
     mUI.addButton(rectangles.at(2),
             std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::ADD_FOOD));
+
+    mBackground.setup(getWindowWidth(), getWindowHeight());
 
     // debug gui setup
     const auto windowCaption = "Parameters";
@@ -159,6 +163,7 @@ void ArriveApp::keyDown(KeyEvent event) {
 void ArriveApp::update() {
     mEcosystem.update();
     mUI.update();
+    mBackground.update(mOffset);
 
     mFittestLifetime = static_cast<int>(mEcosystem.getFittestLifetime());
 }
@@ -166,6 +171,9 @@ void ArriveApp::update() {
 void ArriveApp::draw() {
     //hideCursor();
     gl::clear(Color{0.0f, 0.05f, 0.1f});
+
+    gl::color(0.2f, 0.3f, 0.5f, 0.5f);
+    mBackground.draw();
 
     // draw cursor (don't translate)
     gl::color(0.f, 0.f, 0.5f, 0.2f);
