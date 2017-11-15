@@ -65,6 +65,9 @@ void ArriveApp::setup() {
     mZoomMin = 1.0f;
     mZoomAmount = 0.2f;
 
+    // global texture assets
+    ch::gGlow = gl::Texture::create(loadImage(loadAsset("particle.png")));
+
     mEcosystem.setup();
     mUI = ch::UserInterface{};
     const auto windowWidth = static_cast<float>(getWindowWidth());
@@ -172,7 +175,7 @@ void ArriveApp::draw() {
     //hideCursor();
     gl::clear(Color{0.0f, 0.05f, 0.1f});
 
-    gl::color(0.2f, 0.3f, 0.5f, 0.5f);
+    gl::color(0.2f, 0.2f, 0.5f, 0.5f);
     mBackground.draw();
 
     // draw cursor (don't translate)

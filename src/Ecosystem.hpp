@@ -54,11 +54,13 @@ private:
 
     Mode mMode = PAN_VIEW;
     Tick mTickCount = 0;
+    Tick mFittestLifetime = 0;
+
     int mNumFood = 30;
     int mMaxNumFood = 30;
     int mNumVehicles = 50;
     int mMaxFoodSpawns = 10;
-    Tick mFittestLifetime = 0;
+
     std::vector<Circle> mFood;
     std::vector<Vehicle> mVehicles;
     std::vector<Barrier> mBarriers;
@@ -209,7 +211,12 @@ void Ecosystem::updateVehicles() {
             }
         }
 
-        vehicle.arrive(nearestFoodRef->getPosition());
+        if (distance(vehicle.getPosition(), nearestFoodRef->getPosition()) < 400.0f) {
+            vehicle.arrive(nearestFoodRef->getPosition());
+        } else {
+            vehicle.arrive(vehicle.getPosition() +
+                    400.0f * randVec2());
+        }
         vehicle.update(mBarriers);
     }
 }
@@ -301,11 +308,18 @@ bool Ecosystem::isFocused() const {
 
 void Ecosystem::draw() const {
     // draw food spawn areas
-    gl::color(ColorA{0.1f, 0.1f, 0.6f, 0.3f});
-    const auto offset = vec2{5.0f, 5.0f};
+    const auto offset = 500.0f * vec2{1.0f, 1.0f};
+
+    gl::color(ColorA{0.1f, 0.2f, 0.5f, 0.15f});
+    randSeed(0);  // set fixed seed
+
     for (const auto& spawn : mFoodSpawns) {
-        cinder::gl::drawSolidRect(Rectf{spawn - offset, spawn + offset});
+        //gl::drawSolidRect(Rectf{spawn - offset, spawn + offset});
+        const auto s = addNoise(spawn, 150.0f);
+        gl::draw(gGlow, Rectf{s - offset, s + offset});
     }
+
+    randSeed(mTickCount);  // reset to random
 
     for (const auto& corpse : mCorpses) { corpse.draw(); }
     for (const auto& food : mFood) { food.draw(); }
