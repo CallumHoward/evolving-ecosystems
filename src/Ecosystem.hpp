@@ -311,7 +311,7 @@ void Ecosystem::draw() const {
     const auto offset = 500.0f * vec2{1.0f, 1.0f};
 
     gl::color(ColorA{0.1f, 0.2f, 0.5f, 0.15f});
-    randSeed(0);  // set fixed seed
+    randSeed(0);  // set fixed seed to disperse overlapping spawns
 
     for (const auto& spawn : mFoodSpawns) {
         //gl::drawSolidRect(Rectf{spawn - offset, spawn + offset});
