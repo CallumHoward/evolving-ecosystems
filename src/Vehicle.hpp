@@ -46,8 +46,11 @@ public:
     void arrive(const vec2& target);
     void eat(float energy);
     bool isDead() const { return mEnergy <= 0.0f; }
+    bool readyToReproduce() const { return mMaxEnergy - mEnergy < 1.0f; }
     void setColor(Color c) { mColor = c; }
     float getSightDist() const { return mSightDist; }
+    void setEnergy(float energy) { mEnergy = energy; }
+    float getEnergy() const { return mEnergy; }
 
     // we could add mass here if we want A = F / M
     void applyForce(vec2 force) { mAcceleration += force / (bSize / 3.0f); }
@@ -113,9 +116,9 @@ void Vehicle::draw() const {
     const float vitality = lmap(mEnergy, 0.0f, mMaxEnergy, 0.3f, 1.0f);
 
     // outer glow
-    gl::color(ColorA{mColor.value(), 0.1});
-    const auto offset = 50.0f * vec2{1.0f, 1.0f};
-    gl::draw(gGlow, Rectf{-offset, offset});
+    //gl::color(ColorA{mColor.value(), 0.1});
+    //const auto offset = 50.0f * vec2{1.0f, 1.0f};
+    //gl::draw(gGlow, Rectf{-offset, offset});
 
     gl::color(ColorA{mColor.value(), vitality});
     gl::drawSolidCircle(vec2{}, bSize * vitality * 2.0f);

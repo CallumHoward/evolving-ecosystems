@@ -9,6 +9,7 @@
 #include <limits>                       // numeric_limits
 #include <algorithm>                    // generate_n, sort
 #include <range/v3/algorithm/any_of.hpp>
+#include <range/v3/algorithm/find_if.hpp>
 #include <range/v3/algorithm/min_element.hpp>
 #include <range/v3/algorithm/remove_if.hpp>
 #include <range/v3/algorithm/sort.hpp>
@@ -131,20 +132,37 @@ void Ecosystem::update() {
 
 void Ecosystem::updateVehicles() {
 
+    Vehicle* reproReady = nullptr;
+
     for (auto& vehicle : mVehicles) {
-        if (vehicle.isDead()) {
+        if (vehicle.readyToReproduce()) {
+            reproReady = &vehicle;
+
+        } else if (vehicle.isDead()) {
             // check how long it survived and if it broke the record
             const auto lifetime = mTickCount - vehicle.getBirthTick();
             if (lifetime > mFittestLifetime) { mFittestLifetime = lifetime; }
 
             // place a corpse at its last position
-            if (mTickCount - vehicle.getBirthTick() > 500) {
+            if (mTickCount - vehicle.getBirthTick() > 400) {
                 mCorpses.push_back(
                         Circle{mTickCount, 5.0f, vehicle.getPosition(), Circle::CORPSE});
             }
 
             // spawn a new vehicle in its place
-            vehicle = Vehicle{mTickCount, makeRandPoint(), mVehicleColor};
+            if (reproReady != nullptr) {
+                vehicle = Vehicle{mTickCount, reproReady->getPosition(), mVehicleColor};
+
+                // split energy evenly between parent and child (mitosis)
+                vehicle.setEnergy(reproReady->getEnergy() / 2.0f);
+                reproReady->setEnergy(reproReady->getEnergy() / 2.0f);
+
+                reproReady = nullptr;  // no longer ready to reproduce
+
+            } else {  // make new child at initial spawn area
+                vehicle = Vehicle{mTickCount, makeRandPoint(), mVehicleColor};
+            }
+
             continue;
         }
 
