@@ -47,7 +47,7 @@ void UIButton::draw() const {
     switch (mState) {
         case HOVER: gl::color(ColorA{0.8f, 0.8f, 0.8f, 0.8f}); break;
         case DOWN: gl::color(ColorA{0.5f, 0.5f, 0.5f, 0.8f}); break;
-        case UP: gl::color(ColorA{0.6f, 0.6f, 0.1f, 0.8}); break;
+        case UP: gl::color(ColorA{0.6f, 0.6f, 0.1f, 0.8f}); break;
     }
 
     gl::drawSolidRect(mRectf);

@@ -95,7 +95,7 @@ void Ecosystem::setup() {
     // combine mesh and shader into batch for much better performance
     mBatch = gl::Batch::create(mMesh, mShader);
 
-    mFoodSpawnsFbo = gl::Fbo::create(getWindowWidth() * 2.0f, getWindowHeight() * 2.0f);
+    mFoodSpawnsFbo = gl::Fbo::create(getWindowWidth(), getWindowHeight());
 }
 
 void Ecosystem::update() {
