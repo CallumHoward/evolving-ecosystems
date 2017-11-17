@@ -128,24 +128,7 @@ void Vehicle::draw(gl::BatchRef batch) const {
 }
 
 void Vehicle::draw() const {
-    //draw_tail();
-
-    // rotate in the direction of velocity
-    const float theta = ch::heading(mVelocity) + M_PI / 2.0f;
-
-    gl::ScopedModelMatrix modelMatrix;
-    gl::translate(bPosition);
-    gl::rotate(theta);
-
-    const float vitality = lmap(mEnergy, 0.0f, mMaxEnergy, 0.3f, 1.0f);
-
-    // outer glow
-    //gl::color(ColorA{mColor.value(), 0.1});
-    //const auto offset = 50.0f * vec2{1.0f, 1.0f};
-    //gl::draw(gGlow, Rectf{-offset, offset});
-
-    gl::color(ColorA{mColor.value(), vitality});
-    gl::drawSolidCircle(vec2{}, bSize * vitality * 2.0f);
+    // not implemented
 }
 
 void Vehicle::eat(float energy) {

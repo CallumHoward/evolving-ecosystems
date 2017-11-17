@@ -4,7 +4,7 @@
 #ifndef USERINTERFACE_HPP
 #define USERINTERFACE_HPP
 
-#include <range/v3/algorithm/any_of.hpp>    // any_of
+#include <algorithm>
 #include <vector>
 #include "cinder/gl/gl.h"                   // vec2, Rectf
 #include "UIButton.hpp"
@@ -56,7 +56,7 @@ void UserInterface::mouseUp(const vec2& pos) {
 }
 
 bool UserInterface::isFocused() {
-    return ranges::any_of(mButtons,
+    return any_of(mButtons.cbegin(), mButtons.cend(),
             [] (const UIButton& button) { return button.isFocused(); });
 }
 

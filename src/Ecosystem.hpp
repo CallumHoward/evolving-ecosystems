@@ -7,13 +7,7 @@
 #include <cassert>
 #include <vector>
 #include <limits>                       // numeric_limits
-#include <algorithm>                    // generate_n, sort
-#include <range/v3/algorithm/any_of.hpp>
-#include <range/v3/algorithm/find_if.hpp>
-#include <range/v3/algorithm/min_element.hpp>
-#include <range/v3/algorithm/remove_if.hpp>
-#include <range/v3/algorithm/sort.hpp>
-#include <boost/circular_buffer.hpp>
+#include <algorithm>                    // generate_n, sort, any_of, find_if, min_element, remove_if
 #include "cinder/gl/gl.h"
 #include "cinder/app/App.h"             // MouseEvent, getWindowWidth, getWindowHeight
 #include "sp/Grid.h"
@@ -27,7 +21,6 @@
 namespace ch {
 
 using namespace ci;
-using namespace ranges;
 
 class Ecosystem {
 public:
@@ -118,7 +111,7 @@ void Ecosystem::update() {
 
     // find and replace oldest food to keep circulation going
     if (randFloat(0.0f, 1.0f) < 0.016f) {
-        const auto found = min_element(mFood,
+        const auto found = min_element(mFood.begin(), mFood.end(),
                 [] (const Circle& lhs, const Circle& rhs) {
                     return lhs.getBirthTick() < rhs.getBirthTick();
                 });
@@ -132,7 +125,7 @@ void Ecosystem::update() {
         barrier.update();
     }
 
-    const auto to_erase = remove_if(mBarriers,
+    const auto to_erase = remove_if(mBarriers.begin(), mBarriers.end(),
             [](const auto& barrier) { return not barrier.isActive(); });
     if (to_erase != std::end(mBarriers)) { mBarriers.erase(to_erase); }
 
@@ -203,7 +196,7 @@ void Ecosystem::updateVehicles() {
                     vehicle.getPosition(), vehicle.getSightDist());
 
             // order by smallest distance first
-            ranges::sort(neighbors,
+            sort(neighbors.begin(), neighbors.end(),
                     [] (const auto& lhs, const auto& rhs) {
                         return lhs.second < rhs.second;
                     });
@@ -256,7 +249,7 @@ void Ecosystem::mouseDown(const vec2& mousePos) {
         //TODO check to connect other barriers
         for (auto& barrier : mBarriers) { barrier.mouseDown(mousePos); }
 
-        if (not any_of(mBarriers,
+        if (not any_of(mBarriers.cbegin(), mBarriers.cend(),
                 [] (const Barrier& b) { return b.isFocused(); })) {
             addBarrier(mousePos);
         }
@@ -269,7 +262,7 @@ void Ecosystem::mouseDown(const vec2& mousePos) {
             // add to target locations around which food spawns
             mFoodSpawns.push_back(mousePos);
             // find oldest food
-            const auto found = min_element(mFood,
+            const auto found = min_element(mFood.begin(), mFood.end(),
                     [] (const Circle& lhs, const Circle& rhs) {
                         return lhs.getBirthTick() < rhs.getBirthTick();
                     });
@@ -320,7 +313,7 @@ void Ecosystem::setMode(Mode m) {
 }
 
 bool Ecosystem::isOccluded(const Vehicle& v, const vec2& target) {
-    return ranges::any_of(mBarriers,
+    return any_of(mBarriers.cbegin(), mBarriers.cend(),
           [&v, &target] (const Barrier& b) {
               return b.hasCrossed(v.getPosition(), target);
           });
@@ -331,7 +324,8 @@ vec2 Ecosystem::chooseSpawn() const {
 }
 
 bool Ecosystem::isFocused() const {
-    return ranges::any_of(mBarriers, [] (const Barrier& b) { return b.isFocused(); });
+    return any_of(mBarriers.cbegin(), mBarriers.cend(),
+            [] (const Barrier& b) { return b.isFocused(); });
 }
 
 void Ecosystem::draw(const vec2& offset) const {
