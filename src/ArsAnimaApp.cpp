@@ -25,6 +25,9 @@ public:
     void mouseDrag(MouseEvent event) override;
     void mouseWheel(MouseEvent event) override;
     void mouseMove(MouseEvent event) override;
+    void touchesBegan(TouchEvent event) override;
+    void touchesMoved(TouchEvent event) override;
+    void touchesEnded(TouchEvent event) override;
     void keyDown(KeyEvent event) override;
     void update() override;
     void draw() override;
@@ -118,7 +121,7 @@ void ArsAnimaApp::mouseDown(MouseEvent event) {
     mEcosystem.mouseDown(pos + mOffset);
     if (mEcosystem.isFocused()) { return; }
 
-    mLastPos = event.getPos();
+    mLastPos = pos;
 }
 
 void ArsAnimaApp::mouseUp(MouseEvent event) {
@@ -157,6 +160,55 @@ void ArsAnimaApp::mouseMove(MouseEvent event) {
     if (mUI.isFocused()) { return; }
 
     mCursor = event.getPos();
+}
+
+void ArsAnimaApp::touchesBegan(TouchEvent event) {
+    if (event.getTouches().size() == 2) {
+        const vec2 pos0 = event.getTouches().at(0).getPos();
+        const vec2 pos1 = event.getTouches().at(1).getPos();
+        const vec2 pos = (pos0 + pos1) / 2.0f;
+        mLastPos = pos;
+
+    } else {
+        const vec2 pos = event.getTouches().at(0).getPos();
+        mUI.mouseDown(pos);
+        if (mUI.isFocused()) { return; }
+
+        mEcosystem.mouseDown(pos + mOffset);
+        if (mEcosystem.isFocused()) { return; }
+    }
+}
+
+void ArsAnimaApp::touchesMoved(TouchEvent event) {
+    // do nothing if draging in UI
+    if (mUI.isFocused()) { return; }
+
+    if (event.getTouches().size() == 1) {
+        const vec2 pos = event.getTouches().at(0).getPos();
+        mDebugPoint = pos + mOffset;
+
+        mEcosystem.mouseDrag(pos + mOffset);
+        //mEcosystem.mouseDrag(pos);
+        if (mEcosystem.isFocused()) { return; }
+
+    } else if (event.getTouches().size() == 2) {
+
+        const vec2 pos0 = event.getTouches().at(0).getPos();
+        const vec2 pos1 = event.getTouches().at(1).getPos();
+        const vec2 pos = (pos0 + pos1) / 2.0f;
+
+        mOffset += (mLastPos - pos) / mZoom;
+        mLastPos = pos;
+    }
+}
+
+void ArsAnimaApp::touchesEnded(TouchEvent event) {
+    if (event.getTouches().size() == 1) {
+        const vec2 pos = event.getTouches().at(0).getPos();
+        mEcosystem.mouseUp(pos + mOffset);
+        //mEcosystem.mouseUp(pos);
+        mUI.mouseUp(pos);
+    }
 }
 
 void ArsAnimaApp::keyDown(KeyEvent event) {
