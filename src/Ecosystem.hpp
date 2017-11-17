@@ -15,7 +15,7 @@
 #include <range/v3/algorithm/sort.hpp>
 #include <boost/circular_buffer.hpp>
 #include "cinder/gl/gl.h"
-#include "cinder/app/App.h"             // MouseEvent
+#include "cinder/app/App.h"             // MouseEvent, getWindowWidth, getWindowHeight
 #include "sp/Grid.h"
 #include "sp/KdTree.h"
 #include "chUtils.hpp"                  // makeRandPoint, distance
@@ -33,7 +33,7 @@ class Ecosystem {
 public:
     void setup();
     void update();
-    void draw() const;
+    void draw(const vec2& offset = vec2{}) const;
     void mouseDown(const vec2& mousePos);
     void mouseUp(const vec2& mousePos);
     void mouseDrag(const vec2& mousePos);
@@ -75,6 +75,8 @@ private:
     gl::BatchRef mBatch;
     gl::VboMeshRef mMesh;
     gl::GlslProgRef mShader;
+
+    gl::FboRef mFoodSpawnsFbo;
 };
 
 
@@ -91,19 +93,16 @@ void Ecosystem::setup() {
 
     std::generate_n(std::back_inserter(mFoodSpawns), mMaxFoodSpawns, makeRandPoint);
 
-    // make a sample barrier
-    //mBarriers.push_back(Barrier{0});
-
     mParticleSpatialStruct = SpatialStruct{};
 
     // create a default shader with color and texture support
     mShader = gl::context()->getStockShader(gl::ShaderDef().color());
-
     // create ball mesh ( much faster than using gl::drawSolidCircle() )
     mMesh = Vehicle::createMesh();
-
     // combine mesh and shader into batch for much better performance
     mBatch = gl::Batch::create(mMesh, mShader);
+
+    mFoodSpawnsFbo = gl::Fbo::create(getWindowWidth() * 2.0f, getWindowHeight() * 2.0f);
 }
 
 void Ecosystem::update() {
@@ -325,7 +324,6 @@ bool Ecosystem::isOccluded(const Vehicle& v, const vec2& target) {
           [&v, &target] (const Barrier& b) {
               return b.hasCrossed(v.getPosition(), target);
           });
-
 }
 
 vec2 Ecosystem::chooseSpawn() const {
@@ -336,20 +334,23 @@ bool Ecosystem::isFocused() const {
     return ranges::any_of(mBarriers, [] (const Barrier& b) { return b.isFocused(); });
 }
 
-void Ecosystem::draw() const {
-    // draw food spawn areas
-    const auto offset = 500.0f * vec2{1.0f, 1.0f};
+void Ecosystem::draw(const vec2& offset) const {
+    {
+        gl::ScopedFramebuffer fbo{mFoodSpawnsFbo};
+        gl::clear(ColorA{0, 0, 0, 0});
 
-    gl::color(ColorA{0.1f, 0.2f, 0.5f, 0.15f});
-    randSeed(0);  // set fixed seed to disperse overlapping spawns
+        // draw food spawn areas
+        const auto drawOffset = 500.0f * vec2{1.0f, 1.0f};
+        gl::color(Color::white());
 
-    for (const auto& spawn : mFoodSpawns) {
-        //gl::drawSolidRect(Rectf{spawn - offset, spawn + offset});
-        const auto s = addNoise(spawn, 150.0f);
-        gl::draw(gGlow, Rectf{s - offset, s + offset});
+        for (const auto& spawn : mFoodSpawns) {
+            gl::draw(gGlow, Rectf{spawn - drawOffset, spawn + drawOffset});
+        }
     }
 
-    randSeed(static_cast<unsigned int>(mTickCount));  // reset to random
+    const auto viewport = Rectf{offset, vec2{getWindowWidth(), getWindowHeight()} + offset};
+    gl::color(ColorA{0.1f, 0.2f, 0.5f, 0.3f});
+    gl::draw(mFoodSpawnsFbo->getColorTexture(), viewport);
 
     for (const auto& corpse : mCorpses) { corpse.draw(); }
     for (const auto& food : mFood) { food.draw(); }

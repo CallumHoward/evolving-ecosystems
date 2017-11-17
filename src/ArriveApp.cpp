@@ -193,7 +193,7 @@ void ArriveApp::draw() {
         // apply translational offset
         gl::translate(-mOffset);
 
-        mEcosystem.draw();
+        mEcosystem.draw(mOffset);
         //gl::drawSolidCircle(mDebugPoint, 10.0f);
     }
 
