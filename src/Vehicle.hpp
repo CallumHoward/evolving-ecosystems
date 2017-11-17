@@ -119,7 +119,7 @@ void Vehicle::draw(gl::BatchRef batch) const {
     gl::scale(vec2{vitality, vitality});
 
     // outer glow
-    gl::color(ColorA{mColor.value(), 0.1});
+    gl::color(ColorA{mColor.value(), 0.1f});
     const auto offset = 100.0f * vec2{1.0f, 1.0f};
     gl::draw(gGlow, Rectf{-offset, offset});
 

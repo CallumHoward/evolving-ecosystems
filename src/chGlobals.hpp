@@ -5,6 +5,7 @@
 #define CHGLOBALS_HPP
 
 #include "cinder/gl/gl.h"
+#include <iso646.h>
 
 namespace ch {
 

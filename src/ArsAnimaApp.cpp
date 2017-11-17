@@ -5,6 +5,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Log.h"
 //#include "cinder/params/Params.h"
 
 #include "chGlobals.hpp"
@@ -200,7 +201,7 @@ void ArsAnimaApp::draw() {
     mUI.draw();  // UI not affected by world transforms
     
     mFramerate = std::round(getAverageFps());
-    std::cout << mFramerate << '\n';
+	CI_LOG_I(mFramerate);
     //mParams.draw();
 }
 

@@ -34,8 +34,8 @@ public:
     public:
         EndPoint(Tick currentTick, float size = 0.0f, const vec2& position = vec2{}) :
                 Particle{size, position, currentTick}, mActive{true}, mMouseOver{false} {
-            mFill = ColorA{0.5f, 0.5f, 0.0f, 0.3};
-            mOutline = ColorA{0.6f, 0.6f, 0.1f, 0.8};
+            mFill = ColorA{0.5f, 0.5f, 0.0f, 0.3f};
+            mOutline = ColorA{0.6f, 0.6f, 0.1f, 0.8f};
         }
 
         void update() override {};
@@ -87,8 +87,8 @@ public:
     public:
         MidPoint(Tick currentTick, float size = 0.0f, const vec2& position = vec2{}) :
                 Particle{size, position, currentTick}, mActive{true}, mMouseOver{false} {
-            mFill = ColorA{0.5f, 0.0f, 0.0f, 0.3};
-            mOutline = ColorA{0.6f, 0.1f, 0.1f, 0.8};
+            mFill = ColorA{0.5f, 0.0f, 0.0f, 0.3f};
+            mOutline = ColorA{0.6f, 0.1f, 0.1f, 0.8f};
         }
 
         void update() override {};
@@ -181,7 +181,7 @@ void Barrier::draw() const {
 
     const auto line = PolyLine2f{linePoints, true};
 
-    gl::color(ColorA{0.6f, 0.6f, 0.1f, 0.8});
+    gl::color(ColorA{0.6f, 0.6f, 0.1f, 0.8f});
 
     gl::drawSolid(line);
 
