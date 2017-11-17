@@ -42,6 +42,7 @@ public:
     void update(const std::vector<Barrier>& barriers);
     void update() override { update(std::vector<Barrier>{}); }
     void draw() const override;
+    void draw(gl::BatchRef batch) const;
 
     void arrive(const vec2& target);
     void eat(float energy);
@@ -55,8 +56,10 @@ public:
     // we could add mass here if we want A = F / M
     void applyForce(vec2 force) { mAcceleration += force / (bSize / 3.0f); }
 
+    static gl::VboMeshRef createMesh();
+
 private:
-    void draw_tail() const;
+    void draw_tail(gl::BatchRef batch) const;
 
     Anim<Color> mColor;
     vec2 mVelocity;
@@ -103,8 +106,24 @@ void Vehicle::update(const std::vector<Barrier>& barriers) {
     mAcceleration = vec2{0, 0};  // reset acceleration to 0 each cycle
 }
 
+void Vehicle::draw(gl::BatchRef batch) const {
+    draw_tail(batch);
+
+    // rotate in the direction of velocity
+    const float theta = ch::heading(mVelocity) + M_PI / 2.0f;
+    const float vitality = lmap(mEnergy, 0.0f, mMaxEnergy, 0.3f, 1.0f);
+
+    gl::ScopedModelMatrix modelMatrix;
+    gl::translate(bPosition);
+    gl::rotate(theta);
+    gl::scale(vec2{vitality, vitality});
+
+    gl::color(ColorA{mColor.value(), vitality});
+    batch->draw();
+}
+
 void Vehicle::draw() const {
-    draw_tail();
+    //draw_tail();
 
     // rotate in the direction of velocity
     const float theta = ch::heading(mVelocity) + M_PI / 2.0f;
@@ -149,20 +168,59 @@ void Vehicle::arrive(const vec2& target) {
     applyForce(steer);
 }
 
-void Vehicle::draw_tail() const {
+void Vehicle::draw_tail(gl::BatchRef batch) const {
     const float vitality = lmap(mEnergy, 0.0f, mMaxEnergy, 0.4f, 1.0f);
     const float decayIncrement =
             lmap(1.f, 0.f, static_cast<float>(mHistorySize), 0.f, 1.f);
+
     float decay = decayIncrement;
+
     for (const auto& pos : mHistory) {
         const auto factor = 2.0f;
         gl::color(factor * sGreen[0], factor * sGreen[1], factor * sGreen[2],
                 decay * 0.5f * vitality);
-        gl::drawSolidCircle(pos, bSize * decay * vitality * 2.0f);
+
+        gl::ScopedModelMatrix modelMatrix;
+        gl::translate(pos);
+        gl::scale(vec2{decay * vitality, decay * vitality});
+
+        //gl::drawSolidCircle(vec2{}, bSize * decay * vitality * 2.0f);
+        batch->draw();
+
         decay += decayIncrement;
     }
 }
 
+gl::VboMeshRef Vehicle::createMesh() {
+    size_t slices = 20;
+
+    std::vector<vec3> positions;
+    std::vector<vec2> texcoords;
+    std::vector<uint8_t> indices;
+
+    texcoords.emplace_back(0.5f, 0.5f);
+    positions.emplace_back(0);
+
+    for(size_t i = 0; i <= slices; ++i) {
+        const auto angle = i / static_cast<float>(slices) * 2.0f * static_cast<float>(M_PI);
+        const auto v = vec2{sinf(angle), cosf(angle)};
+
+        texcoords.push_back(vec2{0.5f, 0.5f} + 0.5f * v);
+        positions.push_back(10.0f * vec3{v, 0.0f});
+    }
+
+    gl::VboMesh::Layout layout;
+    layout.usage(GL_STATIC_DRAW);
+    layout.attrib(geom::Attrib::POSITION, 3);
+    layout.attrib(geom::Attrib::TEX_COORD_0, 2);
+
+    auto mesh = gl::VboMesh::create(positions.size(), GL_TRIANGLE_FAN, {layout});
+    mesh->bufferAttrib(geom::POSITION, positions.size() * sizeof(vec3), positions.data());
+    mesh->bufferAttrib(geom::TEX_COORD_0, texcoords.size() * sizeof(vec2), texcoords.data());
+
+    return mesh;
 }
+
+} // namespace ch
 
 #endif

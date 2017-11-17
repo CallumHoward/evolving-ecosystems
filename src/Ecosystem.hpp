@@ -70,8 +70,11 @@ private:
 
     //using SpatialStruct = sp::Grid2<Particle*>;
     using SpatialStruct = sp::KdTree2<Particle*>;
-
     SpatialStruct mParticleSpatialStruct;
+
+    gl::BatchRef mBatch;
+    gl::VboMeshRef mMesh;
+    gl::GlslProgRef mShader;
 };
 
 
@@ -92,6 +95,15 @@ void Ecosystem::setup() {
     //mBarriers.push_back(Barrier{0});
 
     mParticleSpatialStruct = SpatialStruct{};
+
+    // create a default shader with color and texture support
+    mShader = gl::context()->getStockShader(gl::ShaderDef().color());
+
+    // create ball mesh ( much faster than using gl::drawSolidCircle() )
+    mMesh = Vehicle::createMesh();
+
+    // combine mesh and shader into batch for much better performance
+    mBatch = gl::Batch::create(mMesh, mShader);
 }
 
 void Ecosystem::update() {
@@ -337,11 +349,16 @@ void Ecosystem::draw() const {
         gl::draw(gGlow, Rectf{s - offset, s + offset});
     }
 
-    randSeed(mTickCount);  // reset to random
+    randSeed(static_cast<unsigned int>(mTickCount));  // reset to random
 
     for (const auto& corpse : mCorpses) { corpse.draw(); }
     for (const auto& food : mFood) { food.draw(); }
-    for (const auto& vehicle : mVehicles) { vehicle.draw(); }
+
+    {
+        gl::ScopedGlslProg shader(mShader);
+        for (const auto& vehicle : mVehicles) { vehicle.draw(mBatch); }
+    }
+
     for (const auto& barrier : mBarriers) { barrier.draw(); }
 }
 

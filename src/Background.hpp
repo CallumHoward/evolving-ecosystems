@@ -30,13 +30,13 @@ private:
 
     int mWidth;
     int mHeight;
-    float mResolution = 8.0f;
+    float mResolution = 16.0f;
     vec2 mOffset;
 
     int mSeed;
     int mOctaves = 2;
     float mTime = 0.0f;
-    float mFrequency = 1.0f / 30.f;
+    float mFrequency = 1.0f / 20.f;
     Perlin mPerlin;
 };
 
