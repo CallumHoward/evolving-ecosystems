@@ -118,6 +118,11 @@ void Vehicle::draw(gl::BatchRef batch) const {
     gl::rotate(theta);
     gl::scale(vec2{vitality, vitality});
 
+    // outer glow
+    gl::color(ColorA{mColor.value(), 0.1});
+    const auto offset = 100.0f * vec2{1.0f, 1.0f};
+    gl::draw(gGlow, Rectf{-offset, offset});
+
     gl::color(ColorA{mColor.value(), vitality});
     batch->draw();
 }
