@@ -83,8 +83,8 @@ void ArsAnimaApp::setup() {
     // set up primary control window
     getWindow()->setUserData(new WindowData);
     WindowData *dataPrimary = getWindow()->getUserData<WindowData>();
-    dataPrimary->isPrimary = true;
-    dataPrimary->renderUI = true;
+    dataPrimary->isPrimary = false;
+    dataPrimary->renderUI = false;
 
     // set up secondary display window
     const auto displays = Display::getDisplays();
@@ -100,8 +100,8 @@ void ArsAnimaApp::setup() {
         newWindow->setUserData(new WindowData);
 
         WindowData *dataSecondary = newWindow->getUserData<WindowData>();
-        dataSecondary->isPrimary = false;
-        dataSecondary->renderUI = false;
+        dataSecondary->isPrimary = true;
+        dataSecondary->renderUI = true;
     }
 
     mEcosystem.setup();
@@ -308,10 +308,15 @@ void ArsAnimaApp::draw() {
 
         // apply translational offset
         if (getWindow()->getUserData<WindowData>()->isPrimary) {
-            gl::translate(-mOffset);
-        };
+			getWindow()->getUserData<WindowData>()->viewOffset = mOffset;
+        }
 
-        mEcosystem.draw(mOffset, getWindow()->getUserData<WindowData>()->isPrimary);
+		const auto offset = getWindow()->getUserData<WindowData>()->viewOffset;
+		gl::translate(-offset);
+
+		mEcosystem.draw(getWindow()->getUserData<WindowData>()->viewOffset,
+			getWindow()->getUserData<WindowData>()->isPrimary);
+
         //gl::drawSolidCircle(mDebugPoint, 10.0f);
         //gl::color(Color::white());
         //gl::drawSolidCircle(vec2{200, 200}, 10.0f);

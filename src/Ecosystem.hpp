@@ -71,6 +71,7 @@ private:
     gl::GlslProgRef mShader;
 
     gl::FboRef mFoodSpawnsFbo;
+    gl::FboRef mFoodSpawnsFboSecondary;
 };
 
 
@@ -98,6 +99,7 @@ void Ecosystem::setup() {
     mBatchSecondary = gl::Batch::create(mMesh, mShader);
 
     mFoodSpawnsFbo = gl::Fbo::create(getWindowWidth(), getWindowHeight());
+	mFoodSpawnsFboSecondary = gl::Fbo::create(getWindowWidth(), getWindowHeight());
 }
 
 void Ecosystem::update() {
@@ -327,22 +329,46 @@ bool Ecosystem::isFocused() const {
 }
 
 void Ecosystem::draw(const vec2& offset, bool isPrimaryWindow) const {
-    {
-        gl::ScopedFramebuffer fbo{mFoodSpawnsFbo};
-        gl::clear(ColorA{0, 0, 0, 0});
+	
+	if (isPrimaryWindow) {
+		gl::ScopedFramebuffer fbo{mFoodSpawnsFbo};
+		gl::clear(ColorA{0, 0, 0, 0});
 
-        // draw food spawn areas
-        const auto drawOffset = 500.0f * vec2{1.0f, 1.0f};
-        gl::color(Color::white());
+		// draw food spawn areas
+		const auto drawOffset = 500.0f * vec2{1.0f, 1.0f};
+		gl::color(Color::white());
 
-        for (const auto& spawn : mFoodSpawns) {
-            gl::draw(gGlow, Rectf{spawn - drawOffset, spawn + drawOffset});
-        }
-    }
+		for (const auto& spawn : mFoodSpawns) {
+			gl::draw(gGlow, Rectf{spawn - drawOffset, spawn + drawOffset});
+		}
 
-    const auto viewport = Rectf{offset, vec2{getWindowWidth(), getWindowHeight()} + offset};
-    gl::color(ColorA{0.1f, 0.2f, 0.5f, 0.3f});
-    gl::draw(mFoodSpawnsFbo->getColorTexture(), viewport);
+	} 
+	
+	if (isPrimaryWindow) {
+		gl::ScopedFramebuffer fbo{mFoodSpawnsFboSecondary};
+		gl::ScopedModelMatrix modelMatrix;
+		gl::translate(offset);
+		gl::clear(ColorA{0, 0, 0, 0});
+
+		// draw food spawn areas
+		const auto drawOffset = 500.0f * vec2{1.0f, 1.0f};
+		gl::color(Color::white());
+
+		for (const auto& spawn : mFoodSpawns) {
+			gl::draw(gGlow, Rectf{spawn - drawOffset, spawn + drawOffset});
+		}
+	}
+
+	const auto viewport = Rectf{offset, vec2{getWindowWidth(), getWindowHeight()} + offset};
+	gl::color(ColorA{ 0.1f, 0.2f, 0.5f, 0.3f });
+
+	if (isPrimaryWindow) {
+		gl::draw(mFoodSpawnsFbo->getColorTexture(), viewport);
+	} else {
+		gl::draw(mFoodSpawnsFboSecondary->getColorTexture(), viewport);
+	}
+
+
 
     for (const auto& corpse : mCorpses) { corpse.draw(); }
     for (const auto& food : mFood) { food.draw(); }
