@@ -22,17 +22,25 @@ public:
     void mouseMove(const vec2& pos);
     void mouseDown(const vec2& pos);
     void mouseUp(const vec2& pos);
-    void addButton(const Rectf& r, const std::function<void()>& callback);
-    bool isFocused();
+    void addButton(const Rectf& r, const Color& c,
+            gl::TextureRef icon, const std::function<void()>& callback);
+    void addPanel(const Rectf& r);
+    bool isFocused(const vec2& pos);
 
 private:
     std::vector<UIButton> mButtons;
+    Rectf mPanel;
 };
 
 UserInterface::UserInterface() {}
 
-void UserInterface::addButton(const Rectf& r, const std::function<void()>& callback) {
-    mButtons.emplace_back(r, callback);
+void UserInterface::addButton(const Rectf& r, const Color& c,
+        gl::TextureRef icon, const std::function<void()>& callback) {
+    mButtons.emplace_back(r, c, icon, callback);
+}
+
+void UserInterface::addPanel(const Rectf& r) {
+    mPanel = r;
 }
 
 void UserInterface::update() {
@@ -40,6 +48,9 @@ void UserInterface::update() {
 }
 
 void UserInterface::draw() const {
+    gl::color(Color::black());
+    cinder::gl::drawSolidRect(mPanel);
+    
     for (const auto& button : mButtons) { button.draw(); }
 }
 
@@ -48,6 +59,13 @@ void UserInterface::mouseMove(const vec2& pos) {
 }
 
 void UserInterface::mouseDown(const vec2& pos) {
+    if (any_of(mButtons.cbegin(), mButtons.cend(),
+            [&pos] (const UIButton& button) { return button.isFocused(pos); })) {
+        for (auto& button : mButtons) {
+            if (not button.isFocused(pos)) { button.reset(); }
+        }
+    }
+    
     for (auto& button : mButtons) { button.mouseDown(pos); }
 }
 
@@ -55,9 +73,8 @@ void UserInterface::mouseUp(const vec2& pos) {
     for (auto& button : mButtons) { button.mouseUp(pos); }
 }
 
-bool UserInterface::isFocused() {
-    return any_of(mButtons.cbegin(), mButtons.cend(),
-            [] (const UIButton& button) { return button.isFocused(); });
+bool UserInterface::isFocused(const vec2& pos) {
+    return mPanel.contains(pos);
 }
 
 

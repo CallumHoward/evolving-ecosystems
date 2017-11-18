@@ -93,7 +93,7 @@ void ArsAnimaApp::setup() {
         const auto windowFormat = Window::Format()
                 .display(*displays.crbegin())
                 .size(1920, 1080)
-                //.fullscreen()
+                //.fullScreen()
                 .resizable(false);
 
         app::WindowRef newWindow = createWindow(windowFormat);
@@ -105,32 +105,45 @@ void ArsAnimaApp::setup() {
         dataSecondary->renderUI = true;
     }
 
+    // set up virtual world
     mEcosystem.setup();
+    mBackground.setup(getWindowWidth(), getWindowHeight());
+
+    // set up user interface
     mUI = ch::UserInterface{};
     const auto windowWidth = static_cast<float>(getWindowWidth());
-    const auto buttonWidth = 200;
-    const auto buttonHeight = 200;
+    const auto windowHeight = static_cast<float>(getWindowHeight());
+    const auto buttonWidth = 120;
+    const auto buttonHeight = 120;
     const auto buttonSpacing = 20;
     const auto containHeight = buttonHeight + buttonSpacing;
+    const auto containWidth =  windowWidth - buttonSpacing;
     const auto numRectangles = 3;
 
     auto rectangles = std::vector<Rectf>{};
     for (auto i = 0; i < numRectangles; ++i) {
         rectangles.emplace_back(
-                windowWidth - buttonWidth, i * containHeight,
-                windowWidth, (i * containHeight) + buttonHeight);
+                containWidth - buttonWidth, i * containHeight + buttonSpacing,
+                containWidth, (i * containHeight + buttonSpacing) + buttonHeight);
     }
 
-    mUI.addButton(rectangles.at(0),
+    gl::TextureRef buttonBarrier =
+            gl::Texture::create(loadImage(loadAsset("button_barrier.png")));
+    gl::TextureRef buttonRemove =
+            gl::Texture::create(loadImage(loadAsset("button_remove.png")));
+    gl::TextureRef buttonFood =
+            gl::Texture::create(loadImage(loadAsset("button_food.png")));
+
+    mUI.addPanel(Rectf{windowWidth - buttonWidth - 2 * buttonSpacing, 0,
+            windowWidth, windowHeight});
+    mUI.addButton(rectangles.at(0), Color{0.5f, 0.5f, 0.0f}, buttonBarrier,
             std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::ADD_BARRIER));
-    mUI.addButton(rectangles.at(1),
+    mUI.addButton(rectangles.at(1), Color{0.5f, 0.0f, 0.0f}, buttonRemove,
             std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::REMOVE_BARRIER));
-    mUI.addButton(rectangles.at(2),
+    mUI.addButton(rectangles.at(2), Color{0.0f, 0.5f, 0.7f}, buttonFood,
             std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::ADD_FOOD));
 
-    mBackground.setup(getWindowWidth(), getWindowHeight());
-
-    // debug gui setup
+    // set up debug gui
     //const auto windowCaption = "Parameters";
     //mParams = params::InterfaceGl{windowCaption, ivec2{100, 200}};
     //mParams.addParam("Framerate", &mFramerate, true);
@@ -154,7 +167,7 @@ void ArsAnimaApp::mouseDown(MouseEvent event) {
     const vec2 pos = event.getPos();
 
     mUI.mouseDown(pos);
-    if (mUI.isFocused()) { return; }
+    if (mUI.isFocused(pos)) { return; }
 
     mEcosystem.mouseDown(pos + mOffset);
     if (mEcosystem.isFocused()) { return; }
@@ -173,10 +186,11 @@ void ArsAnimaApp::mouseUp(MouseEvent event) {
 void ArsAnimaApp::mouseDrag(MouseEvent event) {
     if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
 
-    // do nothing if draging in UI
-    if (mUI.isFocused()) { return; }
-
     const vec2 pos = event.getPos();
+
+    // do nothing if draging in UI
+    if (mUI.isFocused(pos)) { return; }
+
     mDebugPoint = pos + mOffset;
 
     mEcosystem.mouseDrag(pos + mOffset);
@@ -199,7 +213,7 @@ void ArsAnimaApp::mouseMove(MouseEvent event) {
     if (mEcosystem.isFocused()) { return; }
 
     mUI.mouseMove(pos);
-    if (mUI.isFocused()) { return; }
+    if (mUI.isFocused(pos)) { return; }
 
     mCursor = event.getPos();
 }
@@ -215,7 +229,7 @@ void ArsAnimaApp::touchesBegan(TouchEvent event) {
     } else {
         const vec2 pos = event.getTouches().at(0).getPos();
         mUI.mouseDown(pos);
-        if (mUI.isFocused()) { return; }
+        if (mUI.isFocused(pos)) { return; }
 
         mEcosystem.mouseDown(pos + mOffset);
         if (mEcosystem.isFocused()) { return; }
@@ -224,11 +238,13 @@ void ArsAnimaApp::touchesBegan(TouchEvent event) {
 
 void ArsAnimaApp::touchesMoved(TouchEvent event) {
     if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
+
+    const vec2 pos = event.getTouches().at(0).getPos();
+    
     // do nothing if draging in UI
-    if (mUI.isFocused()) { return; }
+    if (mUI.isFocused(pos)) { return; }
 
     if (event.getTouches().size() == 1) {
-        const vec2 pos = event.getTouches().at(0).getPos();
         mDebugPoint = pos + mOffset;
 
         mEcosystem.mouseDrag(pos + mOffset);
@@ -260,6 +276,7 @@ void ArsAnimaApp::keyDown(KeyEvent event) {
     //mEcosystem.keyDown(event);
     switch( event.getCode() ) {
         case KeyEvent::KEY_ESCAPE: quit(); break;
+        case KeyEvent::KEY_SPACE: mEcosystem.setMode(ch::PAN_VIEW); break;
         case KeyEvent::KEY_f: setFullScreen(not isFullScreen()); break;
     }
 }
@@ -328,7 +345,7 @@ void ArsAnimaApp::draw() {
     }
 
     mFramerate = std::round(getAverageFps());
-	CI_LOG_I(mFramerate);
+	//CI_LOG_I(mFramerate);
     //mParams.draw();
 }
 
