@@ -47,8 +47,9 @@ public:
     void arrive(const vec2& target);
     void eat(float energy);
     bool isDead() const { return mEnergy <= 0.0f; }
-    bool readyToReproduce() const { return mMaxEnergy - mEnergy < 30.0f; }
-    void setColor(Color c) { mColor = c; }
+    bool readyToReproduce() const { return mMaxEnergy - mEnergy < 20.0f; }
+    void setColor(Color c) { mBaseColor = c; }
+    Color getColor() { return mBaseColor; }
     float getSightDist() const { return mSightDist; }
     void setEnergy(float energy) { mEnergy = energy; }
     float getEnergy() const { return mEnergy; }
@@ -64,6 +65,7 @@ private:
     void draw_tail(gl::BatchRef batch) const;
 
     Anim<Color> mColor;
+    Color mBaseColor = sGreen;
     vec2 mVelocity;
     vec2 mAcceleration;
     bool mIsChild = false;
@@ -107,9 +109,9 @@ void Vehicle::update(const std::vector<Barrier>& barriers) {
 
     // indicate if ready to reproduce
     if (readyToReproduce()) {
-        mColor = Color{0.7f, 0.9f, 0.4f};
+        mColor = mBaseColor + Color{0.2f, 0.4f, 0.1f};
     } else {
-        timeline().apply(&mColor, sGreen, 1.0f, EaseOutAtan());
+        timeline().apply(&mColor, mBaseColor, 1.0f, EaseOutAtan());
     }
 
     bPosition += mVelocity;
@@ -143,8 +145,8 @@ void Vehicle::draw() const {
 
 void Vehicle::eat(float energy) {
     mEnergy = constrain(mEnergy + energy, 0.0f, mMaxEnergy);
-    mColor = sBright;
-    timeline().apply(&mColor, sGreen, 1.0f, EaseOutAtan());
+    mColor = mBaseColor + Color{0.3f, 0.4f, 0.3f};
+    timeline().apply(&mColor, mBaseColor, 1.0f, EaseOutAtan());
 }
 
 // calculates a steering force towards a target
@@ -175,7 +177,7 @@ void Vehicle::draw_tail(gl::BatchRef batch) const {
 
     for (const auto& pos : mHistory) {
         const auto factor = 2.0f;
-        gl::color(factor * sGreen[0], factor * sGreen[1], factor * sGreen[2],
+        gl::color(factor * mBaseColor[0], factor * mBaseColor[1], factor * mBaseColor[2],
                 decay * 0.5f * vitality);
 
         gl::ScopedModelMatrix modelMatrix;

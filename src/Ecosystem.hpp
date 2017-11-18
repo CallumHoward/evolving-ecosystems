@@ -143,7 +143,8 @@ void Ecosystem::updateVehicles() {
     Vehicle* reproReady = nullptr;
 
     for (auto& vehicle : mVehicles) {
-        if (vehicle.readyToReproduce()) {
+        if (vehicle.readyToReproduce() and (reproReady == nullptr or
+                vehicle.getBirthTick() < reproReady->getBirthTick())) {
             reproReady = &vehicle;
 
         } else if (vehicle.isDead()) {
@@ -162,6 +163,15 @@ void Ecosystem::updateVehicles() {
                 vehicle = Vehicle{mTickCount, reproReady->getPosition(), mVehicleColor};
                 vehicle.setIsChild();  // they will have corpse
                 reproReady->setIsChild();
+
+                // inherit color
+                vehicle.setColor(reproReady->getColor());
+
+                // randomly mutate color
+                if (randFloat(0, 1) < 0.4f and
+                        mTickCount - reproReady->getBirthTick() > 250) {
+                    vehicle.setColor(vehicle.getColor() + randVec3() * vec3{0.7, 0.8, 0.5});
+                }
 
                 // split energy evenly between parent and child (mitosis)
                 vehicle.setEnergy(reproReady->getEnergy() * 0.75f);
