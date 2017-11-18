@@ -22,10 +22,9 @@ public:
 
     struct WindowData {
         bool isPrimary = true;
+        bool isFlipped = false;
         bool renderUI = true;
-        bool renderBackground = true;
         vec2 viewOffset = vec2{};
-        float mZoom = 1.0f;
     };
 
     void setup() override;
@@ -84,13 +83,26 @@ void ArsAnimaApp::setup() {
     // set up primary control window
     getWindow()->setUserData(new WindowData);
     WindowData *dataPrimary = getWindow()->getUserData<WindowData>();
+    dataPrimary->isPrimary = true;
+    dataPrimary->renderUI = true;
 
     // set up secondary display window
-    app::WindowRef newWindow = createWindow(Window::Format().size(1920, 1080));
-    newWindow->setUserData(new WindowData);
-    WindowData *dataSecondary = newWindow->getUserData<WindowData>();
-    dataSecondary->isPrimary = false;
-    dataSecondary->renderUI = false;
+    const auto displays = Display::getDisplays();
+    if (displays.size() > 1) {
+
+        const auto windowFormat = Window::Format()
+                .display(*displays.crbegin())
+                .size(1920, 1080)
+                //.fullscreen()
+                .resizable(false);
+
+        app::WindowRef newWindow = createWindow(windowFormat);
+        newWindow->setUserData(new WindowData);
+
+        WindowData *dataSecondary = newWindow->getUserData<WindowData>();
+        dataSecondary->isPrimary = false;
+        dataSecondary->renderUI = false;
+    }
 
     mEcosystem.setup();
     mUI = ch::UserInterface{};
@@ -109,11 +121,11 @@ void ArsAnimaApp::setup() {
     }
 
     mUI.addButton(rectangles.at(0),
-                  std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::ADD_BARRIER));
+            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::ADD_BARRIER));
     mUI.addButton(rectangles.at(1),
-                  std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::REMOVE_BARRIER));
+            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::REMOVE_BARRIER));
     mUI.addButton(rectangles.at(2),
-                  std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::ADD_FOOD));
+            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::ADD_FOOD));
 
     mBackground.setup(getWindowWidth(), getWindowHeight());
 
@@ -128,8 +140,11 @@ void ArsAnimaApp::setup() {
 }
 
 void ArsAnimaApp::prepareSettings(ArsAnimaApp::Settings *settings) {
-    //settings->setWindowSize(1340, 800);
-    settings->setFullScreen();
+    const auto displays = Display::getDisplays();
+    //settings->setDisplay(displays.at(1));
+    settings->setWindowSize(1920, 1080);
+    settings->setResizable(false);
+    //settings->setFullScreen();
     //settings->setHighDensityDisplayEnabled();
 }
 
@@ -251,14 +266,30 @@ void ArsAnimaApp::keyDown(KeyEvent event) {
 void ArsAnimaApp::update() {
     mEcosystem.update();
     mUI.update();
-    mBackground.update(mOffset);
 
     mFittestLifetime = static_cast<int>(mEcosystem.getFittestLifetime());
 }
 
 void ArsAnimaApp::draw() {
+    getWindow()->getRenderer()->makeCurrentContext();
+
     //hideCursor();
     gl::clear(Color{0.0f, 0.05f, 0.1f});
+
+    gl::ScopedModelMatrix displayModelMatrix;
+    if (getWindow()->getUserData<WindowData>()->isPrimary) {
+
+        if (getWindow()->getUserData<WindowData>()->isFlipped) {
+            // flip screen to hide cables
+            gl::rotate(M_PI);
+            gl::translate(-vec2{getWindowWidth(), getWindowHeight()});
+        }
+
+        mBackground.update(mOffset);
+
+    } else {
+        mBackground.update(getWindow()->getUserData<WindowData>()->viewOffset);
+    }
 
     gl::color(0.2f, 0.2f, 0.5f, 0.5f);
     mBackground.draw();
@@ -268,7 +299,7 @@ void ArsAnimaApp::draw() {
     //gl::drawSolidCircle(mCursor, 100.0f);
 
     {
-        gl::ScopedModelMatrix modelMatrix;
+        gl::ScopedModelMatrix worldModelMatrix;
 
         // move origin to the center of the window for zooming
         gl::translate(+getWindowCenter());
@@ -286,7 +317,7 @@ void ArsAnimaApp::draw() {
         //gl::drawSolidCircle(vec2{200, 200}, 10.0f);
     }
 
-    if (getWindow()->getUserData<WindowData>()->isPrimary) {
+    if (getWindow()->getUserData<WindowData>()->renderUI) {
         mUI.draw();  // UI not affected by world transforms
     }
 
