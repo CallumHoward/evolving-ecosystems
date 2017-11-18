@@ -100,6 +100,7 @@ void ArsAnimaApp::setup() {
         newWindow->setUserData(new WindowData);
 
         WindowData *dataSecondary = newWindow->getUserData<WindowData>();
+        dataSecondary->isFlipped = ch::gFlippedDisplay;  // change in chGlobals
         dataSecondary->isPrimary = true;
         dataSecondary->renderUI = true;
     }

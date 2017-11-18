@@ -331,6 +331,14 @@ bool Ecosystem::isFocused() const {
 void Ecosystem::draw(const vec2& offset, bool isPrimaryWindow) const {
 	
 	if (isPrimaryWindow) {
+		gl::ScopedModelMatrix modelMatrix;
+
+		if (gFlippedDisplay) {
+			gl::translate(vec2{getWindowWidth(), getWindowHeight()});
+			gl::rotate(M_PI);
+			gl::translate(-2.0f * offset);
+		}
+
 		gl::ScopedFramebuffer fbo{mFoodSpawnsFbo};
 		gl::clear(ColorA{0, 0, 0, 0});
 
@@ -345,9 +353,15 @@ void Ecosystem::draw(const vec2& offset, bool isPrimaryWindow) const {
 	} 
 	
 	if (isPrimaryWindow) {
-		gl::ScopedFramebuffer fbo{mFoodSpawnsFboSecondary};
 		gl::ScopedModelMatrix modelMatrix;
 		gl::translate(offset);
+
+		if (gFlippedDisplay) {
+			gl::rotate(M_PI);
+			gl::translate(-vec2{getWindowWidth(), getWindowHeight()});
+		}
+
+		gl::ScopedFramebuffer fbo{mFoodSpawnsFboSecondary};
 		gl::clear(ColorA{0, 0, 0, 0});
 
 		// draw food spawn areas

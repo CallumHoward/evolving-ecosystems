@@ -20,6 +20,8 @@ enum Mode {
 
 cinder::gl::TextureRef gGlow;
 
+constexpr bool gFlippedDisplay = false;
+
 } // namespace ch
 
 #endif
