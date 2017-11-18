@@ -47,11 +47,13 @@ public:
     void arrive(const vec2& target);
     void eat(float energy);
     bool isDead() const { return mEnergy <= 0.0f; }
-    bool readyToReproduce() const { return mMaxEnergy - mEnergy < 1.0f; }
+    bool readyToReproduce() const { return mMaxEnergy - mEnergy < 30.0f; }
     void setColor(Color c) { mColor = c; }
     float getSightDist() const { return mSightDist; }
     void setEnergy(float energy) { mEnergy = energy; }
     float getEnergy() const { return mEnergy; }
+    void setIsChild(bool isChild = true) { mIsChild = isChild; }
+    float getIsChild() const { return mIsChild; }
 
     // we could add mass here if we want A = F / M
     void applyForce(vec2 force) { mAcceleration += force / (bSize / 3.0f); }
@@ -64,6 +66,7 @@ private:
     Anim<Color> mColor;
     vec2 mVelocity;
     vec2 mAcceleration;
+    bool mIsChild = false;
     float mEnergy;
     float mMaxForce;
     float mMaxSpeed;
@@ -100,6 +103,13 @@ void Vehicle::update(const std::vector<Barrier>& barriers) {
 
             //break;  // assume colliding with a single barrier only
         }
+    }
+
+    // indicate if ready to reproduce
+    if (readyToReproduce()) {
+        mColor = Color{0.7f, 0.9f, 0.4f};
+    } else {
+        timeline().apply(&mColor, sGreen, 1.0f, EaseOutAtan());
     }
 
     bPosition += mVelocity;

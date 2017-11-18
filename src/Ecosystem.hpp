@@ -50,8 +50,8 @@ private:
     Tick mTickCount = 0;
     Tick mFittestLifetime = 0;
 
-    int mNumFood = 30;
-    int mMaxNumFood = 30;
+    int mNumFood = 60;
+    int mMaxNumFood = 60;
     int mNumVehicles = 50;
     int mMaxFoodSpawns = 10;
 
@@ -152,7 +152,7 @@ void Ecosystem::updateVehicles() {
             if (lifetime > mFittestLifetime) { mFittestLifetime = lifetime; }
 
             // place a corpse at its last position
-            if (mTickCount - vehicle.getBirthTick() > 400) {
+            if (mTickCount - vehicle.getBirthTick() > 300 or vehicle.getIsChild()) {
                 mCorpses.push_back(
                         Circle{mTickCount, 5.0f, vehicle.getPosition(), Circle::CORPSE});
             }
@@ -160,10 +160,12 @@ void Ecosystem::updateVehicles() {
             // spawn a new vehicle in its place
             if (reproReady != nullptr) {
                 vehicle = Vehicle{mTickCount, reproReady->getPosition(), mVehicleColor};
+                vehicle.setIsChild();  // they will have corpse
+                reproReady->setIsChild();
 
                 // split energy evenly between parent and child (mitosis)
-                vehicle.setEnergy(reproReady->getEnergy() / 2.0f);
-                reproReady->setEnergy(reproReady->getEnergy() / 2.0f);
+                vehicle.setEnergy(reproReady->getEnergy() * 0.75f);
+                reproReady->setEnergy(reproReady->getEnergy() * 0.75f);
 
                 reproReady = nullptr;  // no longer ready to reproduce
 
@@ -225,7 +227,7 @@ void Ecosystem::updateVehicles() {
             vehicle.eat(nearestFoodRef->getEnergy());
             switch (nearestFoodRef->getType()) {
             case Circle::FOOD:
-                if (not mFoodSpawns.empty()) {
+                if (not mFoodSpawns.empty() and randBool()) {
                     *nearestFoodRef = Circle{mTickCount, 3.0f, addNoise(chooseSpawn(), 180.0f)};
                 } else {
                     *nearestFoodRef = Circle{mTickCount, 3.0f, makeRandPoint()};
