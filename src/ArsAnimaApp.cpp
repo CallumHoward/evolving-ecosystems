@@ -19,6 +19,15 @@ using namespace std;
 
 class ArsAnimaApp : public App {
 public:
+
+    struct WindowData {
+        bool isPrimary = true;
+        bool renderUI = true;
+        bool renderBackground = true;
+        vec2 viewOffset = vec2{};
+        float mZoom = 1.0f;
+    };
+
     void setup() override;
     static void prepareSettings(ArsAnimaApp::Settings *settings);
     void mouseDown(MouseEvent event) override;
@@ -72,6 +81,17 @@ void ArsAnimaApp::setup() {
     // global texture assets
     ch::gGlow = gl::Texture::create(loadImage(loadAsset("particle.png")));
 
+    // set up primary control window
+    getWindow()->setUserData(new WindowData);
+    WindowData *dataPrimary = getWindow()->getUserData<WindowData>();
+
+    // set up secondary display window
+    app::WindowRef newWindow = createWindow(Window::Format().size(1920, 1080));
+    newWindow->setUserData(new WindowData);
+    WindowData *dataSecondary = newWindow->getUserData<WindowData>();
+    dataSecondary->isPrimary = false;
+    dataSecondary->renderUI = false;
+
     mEcosystem.setup();
     mUI = ch::UserInterface{};
     const auto windowWidth = static_cast<float>(getWindowWidth());
@@ -84,8 +104,8 @@ void ArsAnimaApp::setup() {
     auto rectangles = std::vector<Rectf>{};
     for (auto i = 0; i < numRectangles; ++i) {
         rectangles.emplace_back(
-                                windowWidth - buttonWidth, i * containHeight,
-                                windowWidth, (i * containHeight) + buttonHeight);
+                windowWidth - buttonWidth, i * containHeight,
+                windowWidth, (i * containHeight) + buttonHeight);
     }
 
     mUI.addButton(rectangles.at(0),
@@ -114,6 +134,7 @@ void ArsAnimaApp::prepareSettings(ArsAnimaApp::Settings *settings) {
 }
 
 void ArsAnimaApp::mouseDown(MouseEvent event) {
+    if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
     const vec2 pos = event.getPos();
 
     mUI.mouseDown(pos);
@@ -126,6 +147,7 @@ void ArsAnimaApp::mouseDown(MouseEvent event) {
 }
 
 void ArsAnimaApp::mouseUp(MouseEvent event) {
+    if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
     const vec2 pos = event.getPos();
     mEcosystem.mouseUp(pos + mOffset);
     //mEcosystem.mouseUp(pos);
@@ -133,6 +155,8 @@ void ArsAnimaApp::mouseUp(MouseEvent event) {
 }
 
 void ArsAnimaApp::mouseDrag(MouseEvent event) {
+    if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
+
     // do nothing if draging in UI
     if (mUI.isFocused()) { return; }
 
@@ -148,10 +172,11 @@ void ArsAnimaApp::mouseDrag(MouseEvent event) {
 }
 
 void ArsAnimaApp::mouseWheel(MouseEvent event) {
-    zoomChange(event.getWheelIncrement());
+    //zoomChange(event.getWheelIncrement());
 }
 
 void ArsAnimaApp::mouseMove(MouseEvent event) {
+    if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
     const vec2 pos = event.getPos();
 
     mEcosystem.mouseMove(pos);
@@ -164,6 +189,7 @@ void ArsAnimaApp::mouseMove(MouseEvent event) {
 }
 
 void ArsAnimaApp::touchesBegan(TouchEvent event) {
+    if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
     if (event.getTouches().size() == 2) {
         const vec2 pos0 = event.getTouches().at(0).getPos();
         const vec2 pos1 = event.getTouches().at(1).getPos();
@@ -181,6 +207,7 @@ void ArsAnimaApp::touchesBegan(TouchEvent event) {
 }
 
 void ArsAnimaApp::touchesMoved(TouchEvent event) {
+    if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
     // do nothing if draging in UI
     if (mUI.isFocused()) { return; }
 
@@ -204,6 +231,7 @@ void ArsAnimaApp::touchesMoved(TouchEvent event) {
 }
 
 void ArsAnimaApp::touchesEnded(TouchEvent event) {
+    if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
     if (event.getTouches().size() == 1) {
         const vec2 pos = event.getTouches().at(0).getPos();
         mEcosystem.mouseUp(pos + mOffset);
@@ -213,7 +241,11 @@ void ArsAnimaApp::touchesEnded(TouchEvent event) {
 }
 
 void ArsAnimaApp::keyDown(KeyEvent event) {
-    mEcosystem.keyDown(event);
+    //mEcosystem.keyDown(event);
+    switch( event.getCode() ) {
+        case KeyEvent::KEY_ESCAPE: quit(); break;
+        case KeyEvent::KEY_f: setFullScreen(not isFullScreen()); break;
+    }
 }
 
 void ArsAnimaApp::update() {
@@ -240,18 +272,24 @@ void ArsAnimaApp::draw() {
 
         // move origin to the center of the window for zooming
         gl::translate(+getWindowCenter());
-        gl::scale(mZoom, mZoom);
+        //gl::scale(mZoom, mZoom);
         gl::translate(-getWindowCenter());
 
         // apply translational offset
-        gl::translate(-mOffset);
+        if (getWindow()->getUserData<WindowData>()->isPrimary) {
+            gl::translate(-mOffset);
+        };
 
-        mEcosystem.draw(mOffset);
+        mEcosystem.draw(mOffset, getWindow()->getUserData<WindowData>()->isPrimary);
         //gl::drawSolidCircle(mDebugPoint, 10.0f);
+        //gl::color(Color::white());
+        //gl::drawSolidCircle(vec2{200, 200}, 10.0f);
     }
 
-    mUI.draw();  // UI not affected by world transforms
-    
+    if (getWindow()->getUserData<WindowData>()->isPrimary) {
+        mUI.draw();  // UI not affected by world transforms
+    }
+
     mFramerate = std::round(getAverageFps());
 	CI_LOG_I(mFramerate);
     //mParams.draw();

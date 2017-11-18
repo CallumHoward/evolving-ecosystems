@@ -26,7 +26,7 @@ class Ecosystem {
 public:
     void setup();
     void update();
-    void draw(const vec2& offset = vec2{}) const;
+    void draw(const vec2& offset = vec2{}, bool isPrimaryWindow = true) const;
     void mouseDown(const vec2& mousePos);
     void mouseUp(const vec2& mousePos);
     void mouseDrag(const vec2& mousePos);
@@ -65,7 +65,8 @@ private:
     using SpatialStruct = sp::KdTree2<Particle*>;
     SpatialStruct mParticleSpatialStruct;
 
-    gl::BatchRef mBatch;
+    gl::BatchRef mBatchPrimary;
+    gl::BatchRef mBatchSecondary;
     gl::VboMeshRef mMesh;
     gl::GlslProgRef mShader;
 
@@ -93,7 +94,8 @@ void Ecosystem::setup() {
     // create ball mesh ( much faster than using gl::drawSolidCircle() )
     mMesh = Vehicle::createMesh();
     // combine mesh and shader into batch for much better performance
-    mBatch = gl::Batch::create(mMesh, mShader);
+    mBatchPrimary = gl::Batch::create(mMesh, mShader);
+    mBatchSecondary = gl::Batch::create(mMesh, mShader);
 
     mFoodSpawnsFbo = gl::Fbo::create(getWindowWidth(), getWindowHeight());
 }
@@ -293,11 +295,7 @@ void Ecosystem::mouseMove(const vec2& mousePos) {
     }
 }
 
-void Ecosystem::keyDown(KeyEvent event) {
-    if (event.getChar() == cinder::app::KeyEvent::KEY_SPACE) {
-        mBarriers.push_back(Barrier{0});
-    }
-}
+void Ecosystem::keyDown(KeyEvent event) { }
 
 void Ecosystem::addBarrier(const vec2& pos) {
     mBarriers.push_back(Barrier{0, vec2{pos.x - 100, pos.y}, vec2{pos.x + 100, pos.y}});
@@ -328,7 +326,7 @@ bool Ecosystem::isFocused() const {
             [] (const Barrier& b) { return b.isFocused(); });
 }
 
-void Ecosystem::draw(const vec2& offset) const {
+void Ecosystem::draw(const vec2& offset, bool isPrimaryWindow) const {
     {
         gl::ScopedFramebuffer fbo{mFoodSpawnsFbo};
         gl::clear(ColorA{0, 0, 0, 0});
@@ -351,7 +349,12 @@ void Ecosystem::draw(const vec2& offset) const {
 
     {
         gl::ScopedGlslProg shader(mShader);
-        for (const auto& vehicle : mVehicles) { vehicle.draw(mBatch); }
+
+        if (isPrimaryWindow) {
+            for (const auto& vehicle : mVehicles) { vehicle.draw(mBatchPrimary); }
+        } else {
+            for (const auto& vehicle : mVehicles) { vehicle.draw(mBatchSecondary); }
+        }
     }
 
     for (const auto& barrier : mBarriers) { barrier.draw(); }
