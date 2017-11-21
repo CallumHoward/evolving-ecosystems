@@ -91,9 +91,9 @@ void ArsAnimaApp::setup() {
     if (displays.size() > 1) {
 
         const auto windowFormat = Window::Format()
-                .display(*displays.crbegin())
-                .size(1920, 1080)
-                //.fullScreen()
+                .display(*displays.cbegin())
+                //.size(1920, 1080)
+                .fullScreen()
                 .resizable(false);
 
         app::WindowRef newWindow = createWindow(windowFormat);
@@ -155,11 +155,12 @@ void ArsAnimaApp::setup() {
 
 void ArsAnimaApp::prepareSettings(ArsAnimaApp::Settings *settings) {
     const auto displays = Display::getDisplays();
-    //settings->setDisplay(displays.at(1));
-    settings->setWindowSize(1920, 1080);
+    settings->setDisplay(displays.at(1));
+    //settings->setWindowSize(1920, 1080);
     settings->setResizable(false);
-    //settings->setFullScreen();
+    settings->setFullScreen();
     //settings->setHighDensityDisplayEnabled();
+	settings->setMultiTouchEnabled(true);
 }
 
 void ArsAnimaApp::mouseDown(MouseEvent event) {
