@@ -8,7 +8,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/CinderMath.h"
 #include "cinder/Rand.h"
-#include "Cinder/app/App.h"
+#include "cinder/app/App.h"
 
 namespace ch {
 using namespace ci;
@@ -27,6 +27,8 @@ void setMagnitude(vec2& v, float len);
 vec2 safeNormalize(const vec2& v);
 void limit(vec2& v, float maxLength);
 bool intersects(const vec2& p1, const vec2& q1, const vec2& p2, const vec2& q2);
+vec2 hOrV(const vec2& v);
+vec2 getIntersection(const vec2& a, const vec2& b, const vec2& c, const vec2& d);
 
 inline vec2 midpoint(const vec2& first, const vec2& second) {
     return (second - first) * 0.5f;
