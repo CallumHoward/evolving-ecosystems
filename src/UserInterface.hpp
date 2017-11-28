@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 #include "cinder/gl/gl.h"                   // vec2, Rectf
+#include "chGlobals.hpp"                    // mode
 #include "UIButton.hpp"
 
 
@@ -16,7 +17,8 @@ using namespace ci;
 
 class UserInterface {
 public:
-    UserInterface();
+    UserInterface() {};
+    UserInterface(const std::function<ch::Mode()>& getMode);
     void update();
     void draw() const;
     void mouseMove(const vec2& pos);
@@ -30,9 +32,11 @@ public:
 private:
     std::vector<UIButton> mButtons;
     Rectf mPanel;
+    std::function<ch::Mode()> mGetMode;
 };
 
-UserInterface::UserInterface() {}
+UserInterface::UserInterface(const std::function<ch::Mode()>& getMode) :
+        mGetMode{getMode} {}
 
 void UserInterface::addButton(const Rectf& r, const Color& c,
         gl::TextureRef icon, const std::function<void()>& callback) {
@@ -45,6 +49,10 @@ void UserInterface::addPanel(const Rectf& r) {
 
 void UserInterface::update() {
     for (auto& button : mButtons) { button.update(); }
+    if (mGetMode() == ch::PAN_VIEW) {
+        for (auto& button : mButtons) { button.reset(); }
+        mButtons.begin()->set();
+    }
 }
 
 void UserInterface::draw() const {

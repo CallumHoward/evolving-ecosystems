@@ -53,7 +53,7 @@ public:
         void setPosition(const vec2& pos) { bPosition = pos; }
 
         void mouseDown(const vec2& mousePos) {
-            if (not contains(mousePos, 2.0f)) { return; }
+            if (not contains(mousePos, 3.0f)) { return; }
             mMouseOver = true;
             mLastPos = mousePos;
         }

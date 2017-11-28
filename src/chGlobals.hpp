@@ -15,7 +15,9 @@ enum Mode {
     PAN_VIEW,
     ADD_FOOD,
     ADD_BARRIER,
-    REMOVE_BARRIER
+    REMOVE_BARRIER,
+    GO_HOME,
+    INFO
 };
 
 cinder::gl::TextureRef gGlow;

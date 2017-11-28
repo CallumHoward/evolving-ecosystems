@@ -30,6 +30,7 @@ public:
 
     void setColor(Color c) { mColor = c; }
     void reset() { if (mState == DOWN) { mState = UP; } }
+    void set() { mState = DOWN; }
     bool isFocused(const vec2& pos) const;
 
 private:

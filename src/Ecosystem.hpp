@@ -386,7 +386,7 @@ void Ecosystem::draw(const vec2& offset, bool isPrimaryWindow) const {
 	}
 
 	const auto viewport = Rectf{offset, vec2{getWindowWidth(), getWindowHeight()} + offset};
-	gl::color(ColorA{ 0.1f, 0.2f, 0.5f, 0.3f });
+	gl::color(ColorA{0.1f, 0.2f, 0.5f, 0.3f});
 
 	if (isPrimaryWindow) {
 		gl::draw(mFoodSpawnsFbo->getColorTexture(), viewport);
