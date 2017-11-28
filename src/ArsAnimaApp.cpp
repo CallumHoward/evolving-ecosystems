@@ -236,7 +236,7 @@ void ArsAnimaApp::mouseMove(MouseEvent event) {
 }
 
 void ArsAnimaApp::touchesBegan(TouchEvent event) {
-    if (not gTouchEnabled) { return; }
+    if (not ch::gTouchEnabled) { return; }
     if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
     if (event.getTouches().size() == 2) {
         const vec2 pos0 = event.getTouches().at(0).getPos();
@@ -255,7 +255,7 @@ void ArsAnimaApp::touchesBegan(TouchEvent event) {
 }
 
 void ArsAnimaApp::touchesMoved(TouchEvent event) {
-    if (not gTouchEnabled) { return; }
+    if (not ch::gTouchEnabled) { return; }
     if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
 
     const vec2 pos = event.getTouches().at(0).getPos();
@@ -282,7 +282,7 @@ void ArsAnimaApp::touchesMoved(TouchEvent event) {
 }
 
 void ArsAnimaApp::touchesEnded(TouchEvent event) {
-    if (not gTouchEnabled) { return; }
+    if (not ch::gTouchEnabled) { return; }
     if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
     if (event.getTouches().size() == 1) {
         const vec2 pos = event.getTouches().at(0).getPos();
