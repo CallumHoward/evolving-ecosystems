@@ -316,7 +316,7 @@ void ArsAnimaApp::update() {
 void ArsAnimaApp::draw() {
     getWindow()->getRenderer()->makeCurrentContext();
 
-    //hideCursor();
+    hideCursor();
     gl::clear(Color{0.0f, 0.05f, 0.1f});
 
     gl::ScopedModelMatrix displayModelMatrix;
