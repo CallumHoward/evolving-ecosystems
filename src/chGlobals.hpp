@@ -23,6 +23,7 @@ enum Mode {
 cinder::gl::TextureRef gGlow;
 
 constexpr bool gFlippedDisplay = false;
+constexpr bool gTouchEnabled = false;
 
 } // namespace ch
 
