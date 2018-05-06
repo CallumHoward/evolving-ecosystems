@@ -174,10 +174,10 @@ void ArsAnimaApp::setup() {
 
 void ArsAnimaApp::prepareSettings(ArsAnimaApp::Settings *settings) {
     const auto displays = Display::getDisplays();
-    //settings->setDisplay(displays.at(1));
-    //settings->setWindowSize(1920, 1080);
+    settings->setDisplay(displays.at(1));
+    settings->setWindowSize(1920, 1080);
     settings->setResizable(false);
-    settings->setFullScreen();
+    //settings->setFullScreen();
     //settings->setHighDensityDisplayEnabled();
 	settings->setMultiTouchEnabled(true);
 }
@@ -350,7 +350,7 @@ void ArsAnimaApp::draw() {
 
     // draw cursor (don't translate)
     gl::color(0.f, 0.f, 0.5f, 0.2f);
-    //gl::drawSolidCircle(mCursor, 100.0f);
+    gl::drawSolidCircle(mCursor, 100.0f);
 
     {
         gl::ScopedModelMatrix worldModelMatrix;

@@ -25,6 +25,18 @@
     <Filter Include="Blocks\SpacePartitioning\include\sp">
       <UniqueIdentifier>{30AEAC52-B559-4DB7-8CD9-D9462A64A6FF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Blocks\OSC">
+      <UniqueIdentifier>{142c4e27-0dd4-490f-b5dd-507a571c866b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OSC\src">
+      <UniqueIdentifier>{72771333-74de-4ae2-a76b-d1b2ca97009b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OSC\src\cinder">
+      <UniqueIdentifier>{5e522093-29a9-47e5-9076-2f2740c00cad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OSC\src\cinder\osc">
+      <UniqueIdentifier>{6972c6c1-c221-4352-a64d-d45367453dbf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ArsAnimaApp.cpp">
@@ -45,6 +57,12 @@
     <ClInclude Include="..\blocks\SpacePartitioning\include\sp\KdTree.h">
       <Filter>Blocks\SpacePartitioning\include\sp</Filter>
     </ClInclude>
+    <ClCompile Include="..\src\CommsManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blocks\OSC\src\cinder\osc\Osc.cpp">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -79,6 +97,12 @@
     </ClInclude>
     <ClInclude Include="..\src\UserInterface.hpp">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\CommsManager.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\OSC\src\cinder\osc\Osc.h">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
