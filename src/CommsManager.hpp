@@ -26,6 +26,7 @@ public:
         mReceiver{localPortReceive},
         mSender{localPortSend, destinationHost, destinationPort} {};
     void setup(const std::function<void(int)>& updateCallback);
+    void generateEvent();
 
 private:
     void onSendError(asio::error_code error);

@@ -64,6 +64,24 @@ void CommsManager::setup(const std::function<void(int)>& updateCallback) {
     mUpdateCallback = updateCallback;
 }
 
+// generate random events to test with MaxMSP
+void CommsManager::generateEvent() {
+    // Make sure you're connected before trying to send.
+    if (!mIsConnected) { return; }
+
+    const auto root = "/move";
+    bool trigger = true;
+
+    osc::Message msg(root);
+    msg.append(static_cast<int>(trigger));
+
+    // Send the msg and also provide an error handler. If the message is
+    // important you could store it in the error callback to dispatch it again
+    // if there was a problem.
+    mSender.send(msg,
+            std::bind(&CommsManager::onSendError, this, std::placeholders::_1));
+}
+
 // Unified error handler. Easiest to have a bound function in this situation,
 // since we're sending from many different places.
 void CommsManager::onSendError(asio::error_code error) {

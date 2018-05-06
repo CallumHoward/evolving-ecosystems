@@ -17,6 +17,7 @@ enum Mode {
     ADD_BARRIER,
     REMOVE_BARRIER,
     GO_HOME,
+    SONIFY,
     INFO
 };
 

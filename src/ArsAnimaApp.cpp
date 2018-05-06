@@ -125,7 +125,7 @@ void ArsAnimaApp::setup() {
     const auto buttonSpacing = 20;
     const auto containHeight = buttonHeight + buttonSpacing;
     const auto containWidth =  windowWidth - buttonSpacing;
-    const auto numRectangles = 5;
+    const auto numRectangles = 6;
 
     auto rectangles = std::vector<Rectf>{};
     for (auto i = 0; i < numRectangles; ++i) {
@@ -144,8 +144,8 @@ void ArsAnimaApp::setup() {
             gl::Texture::create(loadImage(loadAsset("button_food.png")));
     gl::TextureRef buttonHome =
             gl::Texture::create(loadImage(loadAsset("button_home.png")));
-    //gl::TextureRef buttonInfo =
-    //        gl::Texture::create(loadImage(loadAsset("button_info.png")));
+    gl::TextureRef buttonInfo =
+            gl::Texture::create(loadImage(loadAsset("button_sonify.png")));
 
     mUI.addPanel(Rectf{windowWidth - buttonWidth - 2 * buttonSpacing, 0,
             windowWidth, windowHeight});
@@ -159,8 +159,8 @@ void ArsAnimaApp::setup() {
             std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::ADD_FOOD));
     mUI.addButton(rectangles.at(4), Color{0.1f, 0.2f, 0.5f}, buttonHome,
             std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::GO_HOME));
-    //mUI.addButton(rectangles.at(5), Color{0.0f, 0.5f, 0.7f}, buttonInfo,
-    //        std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::INFO));
+    mUI.addButton(rectangles.at(5), Color{0.0f, 0.5f, 0.2f}, buttonInfo,
+            std::bind(&ch::Ecosystem::setMode, &mEcosystem, ch::SONIFY));
 
     // set up debug gui
     //const auto windowCaption = "Parameters";
@@ -314,6 +314,10 @@ void ArsAnimaApp::update() {
 
     if (mEcosystem.getMode() == ch::GO_HOME) {
         mOffset = vec2{};
+        mEcosystem.setMode(ch::PAN_VIEW);
+
+    } else if (mEcosystem.getMode() == ch::SONIFY) {
+        mCommsManager.generateEvent();
         mEcosystem.setMode(ch::PAN_VIEW);
     }
 
