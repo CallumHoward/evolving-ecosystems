@@ -2,6 +2,7 @@
 // Callum Howard, 2017
 
 #include <cmath>                    // round
+#include <functional>               // bind, placeholder
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -10,6 +11,7 @@
 
 #include "chGlobals.hpp"
 #include "UserInterface.hpp"
+#include "CommsManager.hpp"
 #include "Background.hpp"
 #include "Ecosystem.hpp"
 
@@ -64,6 +66,7 @@ private:
 
     ch::Background mBackground;
     ch::Ecosystem mEcosystem;
+    ch::CommsManager mCommsManager;
     ch::UserInterface mUI;
 };
 
@@ -108,6 +111,10 @@ void ArsAnimaApp::setup() {
     // set up virtual world
     mEcosystem.setup();
     mBackground.setup(getWindowWidth(), getWindowHeight());
+
+    // set up comms
+    mCommsManager.setup(std::bind(&ch::Ecosystem::puffVehicles, &mEcosystem,
+            std::placeholders::_1));
 
     // set up user interface
     mUI = ch::UserInterface{std::bind(&ch::Ecosystem::getMode, &mEcosystem)};

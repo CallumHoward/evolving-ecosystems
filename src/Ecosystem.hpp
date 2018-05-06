@@ -38,6 +38,7 @@ public:
     void setMode(Mode m);
     Mode getMode() const { return mMode; }
     Tick getFittestLifetime() const { return mFittestLifetime; }
+    void puffVehicles(int midiChannel);
 
     Color mVehicleColor = Color{0.1f, 0.4f, 0.1f};
 
@@ -257,6 +258,10 @@ void Ecosystem::updateVehicles() {
         }
         vehicle.update(mBarriers);
     }
+}
+
+void Ecosystem::puffVehicles(int midiChannel) {
+    for (auto& vehicle : mVehicles) { vehicle.puff(midiChannel); }
 }
 
 void Ecosystem::mouseDown(const vec2& mousePos) {

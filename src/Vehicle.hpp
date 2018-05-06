@@ -35,6 +35,8 @@ public:
         mHistorySkip{0},  // for spread length of tail
         mHistorySize{10} {
             mColor = c;
+            mVelocityModifier = 1.0f;
+            mType = randInt(1, 4);
             mEnergy = randFloat(mMaxEnergy / 4.0f, mMaxEnergy / 2.0f);
             mHistory = boost::circular_buffer<vec2>{mHistorySize};
     }
@@ -61,10 +63,15 @@ public:
 
     static gl::VboMeshRef createMesh();
 
+    void puff(int midiChannel, float energy = 10.0f);
+
 private:
     void draw_tail(gl::BatchRef batch) const;
 
+    int mType;  // 1, 2 or 3, used with midi
+
     Anim<Color> mColor;
+    Anim<float> mVelocityModifier;
     Color mBaseColor = sGreen;
     vec2 mVelocity;
     vec2 mAcceleration;
@@ -84,6 +91,7 @@ private:
 void Vehicle::update(const std::vector<Barrier>& barriers) {
     mVelocity += mAcceleration;  // update the velocity
     ch::limit(mVelocity, mMaxSpeed);
+    mVelocity *= mVelocityModifier;
     if (mHistorySkip % 5 == 0) {
         mHistory.push_back(bPosition);
     }
@@ -141,6 +149,15 @@ void Vehicle::draw(gl::BatchRef batch) const {
 
 void Vehicle::draw() const {
     // not implemented
+}
+
+void Vehicle::puff(int midiChannel, float energy) {
+    if (mType != midiChannel) { return; }
+    //mEnergy = constrain(mEnergy + energy, 0.0f, mMaxEnergy);
+    mColor = Color{1.0f, 1.0f, 1.0f};
+    timeline().apply(&mColor, mBaseColor, 0.4f, EaseOutAtan());
+    mVelocityModifier = 1.5f;
+    timeline().apply(&mVelocityModifier, 0.8f, 0.4f, EaseOutAtan());
 }
 
 void Vehicle::eat(float energy) {

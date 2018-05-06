@@ -11,8 +11,6 @@
 #include "cinder/osc/Osc.h"
 #include "cinder/Timeline.h"
 
-#include "ChessBoard.hpp"
-
 
 namespace ch {
 
@@ -27,9 +25,7 @@ public:
     CommsManager() :
         mReceiver{localPortReceive},
         mSender{localPortSend, destinationHost, destinationPort} {};
-    void setup(const std::function<void()>& updateBoardCallback);
-    void updateBoard(const ChessBoard& chessBoard);
-    void generateEvent();
+    void setup(const std::function<void(int)>& updateCallback);
 
 private:
     void onSendError(asio::error_code error);
@@ -39,8 +35,7 @@ private:
     const uint16_t destinationPort = 5556;
     const uint16_t localPortSend = 5557;
 
-    ch::ChessBoard mCurrentBoard;
-    std::function<void()> mUpdateBoardCallback;
+    std::function<void(int)> mUpdateCallback;
 
     Receiver mReceiver;
     std::map<uint64_t, protocol::endpoint> mConnections;
