@@ -173,13 +173,13 @@ void ArsAnimaApp::setup() {
 }
 
 void ArsAnimaApp::prepareSettings(ArsAnimaApp::Settings *settings) {
-    const auto displays = Display::getDisplays();
-    settings->setDisplay(displays.at(1));
-    settings->setWindowSize(1920, 1080);
-    settings->setResizable(false);
+    //const auto displays = Display::getDisplays();
+    //settings->setDisplay(displays.at(1));
+    //settings->setWindowSize(1920, 1080);
+    //settings->setResizable(false);
     //settings->setFullScreen();
     //settings->setHighDensityDisplayEnabled();
-	settings->setMultiTouchEnabled(true);
+    //settings->setMultiTouchEnabled(true);
 }
 
 void ArsAnimaApp::mouseDown(MouseEvent event) {
@@ -349,8 +349,8 @@ void ArsAnimaApp::draw() {
     mBackground.draw();
 
     // draw cursor (don't translate)
-    gl::color(0.f, 0.f, 0.5f, 0.2f);
-    gl::drawSolidCircle(mCursor, 100.0f);
+    //gl::color(0.f, 0.f, 0.5f, 0.2f);
+    //gl::drawSolidCircle(mCursor, 100.0f);
 
     {
         gl::ScopedModelMatrix worldModelMatrix;
@@ -362,14 +362,14 @@ void ArsAnimaApp::draw() {
 
         // apply translational offset
         if (getWindow()->getUserData<WindowData>()->isPrimary) {
-			getWindow()->getUserData<WindowData>()->viewOffset = mOffset;
+            getWindow()->getUserData<WindowData>()->viewOffset = mOffset;
         }
 
-		const auto offset = getWindow()->getUserData<WindowData>()->viewOffset;
-		gl::translate(-offset);
+        const auto offset = getWindow()->getUserData<WindowData>()->viewOffset;
+        gl::translate(-offset);
 
-		mEcosystem.draw(getWindow()->getUserData<WindowData>()->viewOffset,
-			getWindow()->getUserData<WindowData>()->isPrimary);
+        mEcosystem.draw(getWindow()->getUserData<WindowData>()->viewOffset,
+            getWindow()->getUserData<WindowData>()->isPrimary);
 
         //gl::drawSolidCircle(mDebugPoint, 10.0f);
         //gl::color(Color::white());
@@ -381,7 +381,7 @@ void ArsAnimaApp::draw() {
     }
 
     mFramerate = std::round(getAverageFps());
-	//CI_LOG_I(mFramerate);
+    //CI_LOG_I(mFramerate);
     //mParams.draw();
 }
 
