@@ -100,7 +100,7 @@ void Ecosystem::setup() {
     mBatchSecondary = gl::Batch::create(mMesh, mShader);
 
     mFoodSpawnsFbo = gl::Fbo::create(getWindowWidth(), getWindowHeight());
-	mFoodSpawnsFboSecondary = gl::Fbo::create(getWindowWidth(), getWindowHeight());
+    mFoodSpawnsFboSecondary = gl::Fbo::create(getWindowWidth(), getWindowHeight());
 }
 
 void Ecosystem::update() {
@@ -346,58 +346,58 @@ bool Ecosystem::isFocused() const {
 }
 
 void Ecosystem::draw(const vec2& offset, bool isPrimaryWindow) const {
-	
-	if (isPrimaryWindow) {
-		gl::ScopedModelMatrix modelMatrix;
 
-		if (gFlippedDisplay) {
-			gl::translate(vec2{getWindowWidth(), getWindowHeight()});
-			gl::rotate(M_PI);
-			gl::translate(-2.0f * offset);
-		}
+    if (isPrimaryWindow) {
+        gl::ScopedModelMatrix modelMatrix;
 
-		gl::ScopedFramebuffer fbo{mFoodSpawnsFbo};
-		gl::clear(ColorA{0, 0, 0, 0});
+        if (gFlippedDisplay) {
+            gl::translate(vec2{getWindowWidth(), getWindowHeight()});
+            gl::rotate(M_PI);
+            gl::translate(-2.0f * offset);
+        }
 
-		// draw food spawn areas
-		const auto drawOffset = 500.0f * vec2{1.0f, 1.0f};
-		gl::color(Color::white());
+        gl::ScopedFramebuffer fbo{mFoodSpawnsFbo};
+        gl::clear(ColorA{0, 0, 0, 0});
 
-		for (const auto& spawn : mFoodSpawns) {
-			gl::draw(gGlow, Rectf{spawn - drawOffset, spawn + drawOffset});
-		}
+        // draw food spawn areas
+        const auto drawOffset = 500.0f * vec2{1.0f, 1.0f};
+        gl::color(Color::white());
 
-	} 
-	
-	if (isPrimaryWindow) {
-		gl::ScopedModelMatrix modelMatrix;
-		gl::translate(offset);
+        for (const auto& spawn : mFoodSpawns) {
+            gl::draw(gGlow, Rectf{spawn - drawOffset, spawn + drawOffset});
+        }
 
-		if (gFlippedDisplay) {
-			gl::rotate(M_PI);
-			gl::translate(-vec2{getWindowWidth(), getWindowHeight()});
-		}
+    }
 
-		gl::ScopedFramebuffer fbo{mFoodSpawnsFboSecondary};
-		gl::clear(ColorA{0, 0, 0, 0});
+    if (isPrimaryWindow) {
+        gl::ScopedModelMatrix modelMatrix;
+        gl::translate(offset);
 
-		// draw food spawn areas
-		const auto drawOffset = 500.0f * vec2{1.0f, 1.0f};
-		gl::color(Color::white());
+        if (gFlippedDisplay) {
+            gl::rotate(M_PI);
+            gl::translate(-vec2{getWindowWidth(), getWindowHeight()});
+        }
 
-		for (const auto& spawn : mFoodSpawns) {
-			gl::draw(gGlow, Rectf{spawn - drawOffset, spawn + drawOffset});
-		}
-	}
+        gl::ScopedFramebuffer fbo{mFoodSpawnsFboSecondary};
+        gl::clear(ColorA{0, 0, 0, 0});
 
-	const auto viewport = Rectf{offset, vec2{getWindowWidth(), getWindowHeight()} + offset};
-	gl::color(ColorA{0.1f, 0.2f, 0.5f, 0.3f});
+        // draw food spawn areas
+        const auto drawOffset = 500.0f * vec2{1.0f, 1.0f};
+        gl::color(Color::white());
 
-	if (isPrimaryWindow) {
-		gl::draw(mFoodSpawnsFbo->getColorTexture(), viewport);
-	} else {
-		gl::draw(mFoodSpawnsFboSecondary->getColorTexture(), viewport);
-	}
+        for (const auto& spawn : mFoodSpawns) {
+            gl::draw(gGlow, Rectf{spawn - drawOffset, spawn + drawOffset});
+        }
+    }
+
+    const auto viewport = Rectf{offset, vec2{getWindowWidth(), getWindowHeight()} + offset};
+    gl::color(ColorA{0.1f, 0.2f, 0.5f, 0.3f});
+
+    if (isPrimaryWindow) {
+        gl::draw(mFoodSpawnsFbo->getColorTexture(), viewport);
+    } else {
+        gl::draw(mFoodSpawnsFboSecondary->getColorTexture(), viewport);
+    }
 
 
 

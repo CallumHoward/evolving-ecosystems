@@ -58,7 +58,7 @@ void UserInterface::update() {
 void UserInterface::draw() const {
     gl::color(Color::black());
     cinder::gl::drawSolidRect(mPanel);
-    
+
     for (const auto& button : mButtons) { button.draw(); }
 }
 
@@ -73,7 +73,7 @@ void UserInterface::mouseDown(const vec2& pos) {
             if (not button.isFocused(pos)) { button.reset(); }
         }
     }
-    
+
     for (auto& button : mButtons) { button.mouseDown(pos); }
 }
 

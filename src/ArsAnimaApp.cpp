@@ -124,7 +124,7 @@ void ArsAnimaApp::setup() {
     const auto buttonHeight = 120;
     const auto buttonSpacing = 20;
     const auto containHeight = buttonHeight + buttonSpacing;
-    const auto containWidth =  windowWidth - buttonSpacing;
+    const auto containWidth = windowWidth - buttonSpacing;
     const auto numRectangles = 6;
 
     auto rectangles = std::vector<Rectf>{};
@@ -266,7 +266,7 @@ void ArsAnimaApp::touchesMoved(TouchEvent event) {
     if (not getWindow()->getUserData<WindowData>()->isPrimary) { return; };
 
     const vec2 pos = event.getTouches().at(0).getPos();
-    
+
     // do nothing if draging in UI
     if (mUI.isFocused(pos)) { return; }
 
