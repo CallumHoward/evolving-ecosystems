@@ -107,7 +107,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\..\..\..\Cinder.git\include;..\blocks\SpacePartitioning\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\..\..\Cinder.git\include;..\blocks\SpacePartitioning\include;..\blocks\OSC\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -161,7 +161,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\Cinder.git\include";..\blocks\SpacePartitioning\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\..\..\Cinder.git\include;..\blocks\SpacePartitioning\include;..\blocks\OSC\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -177,7 +177,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>"..\..\..\..\Cinder.git\lib\msw\$(PlatformTarget)\";"..\..\..\..\Cinder.git\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\"</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\Cinder.git\lib\msw\$(PlatformTarget)\;..\..\..\..\Cinder.git\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <SubSystem>Windows</SubSystem>
@@ -193,9 +193,12 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
+    <ClCompile Include="..\blocks\OSC\src\cinder\osc\Osc.cpp" />
     <ClCompile Include="..\src\ArsAnimaApp.cpp" />
+    <ClCompile Include="..\src\CommsManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\blocks\OSC\src\cinder\osc\Osc.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\blocks\SpacePartitioning\include\sp\Grid.h" />
     <ClInclude Include="..\blocks\SpacePartitioning\include\sp\HashTable.h" />
@@ -205,6 +208,7 @@
     <ClInclude Include="..\src\chGlobals.hpp" />
     <ClInclude Include="..\src\chUtils.hpp" />
     <ClInclude Include="..\src\Circle.hpp" />
+    <ClInclude Include="..\src\CommsManager.hpp" />
     <ClInclude Include="..\src\Ecosystem.hpp" />
     <ClInclude Include="..\src\Particle.hpp" />
     <ClInclude Include="..\src\UIButton.hpp" />
