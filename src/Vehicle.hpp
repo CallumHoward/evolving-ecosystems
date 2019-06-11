@@ -13,6 +13,7 @@
 #include "cinder/CinderMath.h"          // M_PI, lmap, constrain
 #include "Particle.hpp"
 #include "Barrier.hpp"
+#include "cinder/Log.h"
 
 namespace ch {
 
@@ -152,7 +153,8 @@ void Vehicle::draw() const {
 }
 
 void Vehicle::puff(int midiChannel, float energy) {
-    if (mType != midiChannel) { return; }
+    //if (mType != midiChannel) { return; }
+    CI_LOG_I("puff!");
     //mEnergy = constrain(mEnergy + energy, 0.0f, mMaxEnergy);
     mColor = Color{1.0f, 1.0f, 1.0f};
     timeline().apply(&mColor, mBaseColor, 0.4f, EaseOutAtan());

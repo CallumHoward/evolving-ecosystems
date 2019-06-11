@@ -13,16 +13,9 @@
 
 namespace ch {
 
-void CommsManager::setup(const std::function<void(int)>& updateCallback) {
-    // for /beat, 1 indicates even beat, 0 for odd beat as MaxMSP
-    // is sending alternating 0s and 1s according to toggle object
-    mReceiver.setListener("/beat",
-            [&](const osc::Message &msg) {
-                auto midiChannel = msg[0].int32();  //TODO
-                //CI_LOG_I(midiChannel);
-
-                mUpdateCallback(midiChannel);
-            });
+void CommsManager::setup(const std::string& listenPath,
+        const std::function<void(int, int)>& updateCallback) {
+    addListener(listenPath, updateCallback);
 
     try {
         // Bind the receiver to the endpoint. This function may throw.
@@ -40,12 +33,14 @@ void CommsManager::setup(const std::function<void(int)>& updateCallback) {
     mReceiver.listen(
             [](asio::error_code error, protocol::endpoint endpoint) -> bool {
                 if (error) {
-                    CI_LOG_E("Error Listening: " << error.message()
-                                                 << " val: " << error.value()
-                                                 << " endpoint: " << endpoint);
+                    CI_LOG_E("Error Listening: "
+                            << error.message()
+                            << " val: " << error.value()
+                            << " endpoint: " << endpoint);
                     return false;
-                } else
+                } else {
                     return true;
+                }
             });
 
     try {
@@ -60,8 +55,19 @@ void CommsManager::setup(const std::function<void(int)>& updateCallback) {
     // Udp doesn't "connect" the same way Tcp does. If bind doesn't throw, we
     // can consider ourselves connected.
     mIsConnected = true;
+}
 
-    mUpdateCallback = updateCallback;
+void CommsManager::addListener(const std::string& listenPath,
+        const std::function<void(int, int)>& updateCallback) {
+
+    mUpdateCallbacks[listenPath] = updateCallback;
+
+    mReceiver.setListener(listenPath,
+            [&](const osc::Message &msg) {
+                const auto index = msg[0].int32();
+                const auto value = msg[1].int32();
+                mUpdateCallbacks.at(msg.getAddress())(index, value);
+            });
 }
 
 // generate random events to test with MaxMSP

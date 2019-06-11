@@ -68,6 +68,8 @@ private:
     ch::Ecosystem mEcosystem;
     ch::CommsManager mCommsManager;
     ch::UserInterface mUI;
+
+    std::unordered_map<int, int> mMidiSeq;
 };
 
 
@@ -113,8 +115,19 @@ void ArsAnimaApp::setup() {
     mBackground.setup(getWindowWidth(), getWindowHeight());
 
     // set up comms
-    mCommsManager.setup(std::bind(&ch::Ecosystem::puffVehicles, &mEcosystem,
-            std::placeholders::_1));
+    //auto puffFunc = std::bind(&ch::Ecosystem::puffVehicles, &mEcosystem,
+    //        std::placeholders::_1);
+
+    //mCommsManager.addListener("/midi/midi_fighter_twister/0/8/control_change",
+    //        puffFunc);
+
+    mCommsManager.setup("/midi/midi_fighter_twister/0/8/control_change",
+            [this] (int index, int value) {
+                mEcosystem.puffVehicles(1);
+                //auto puffFunc = std::bind(&ch::Ecosystem::puffVehicles,
+                //        &mEcosystem, std::placeholders::_1);
+                //puffFunc(1);
+            });
 
     // set up user interface
     mUI = ch::UserInterface{std::bind(&ch::Ecosystem::getMode, &mEcosystem)};
@@ -175,9 +188,9 @@ void ArsAnimaApp::setup() {
 void ArsAnimaApp::prepareSettings(ArsAnimaApp::Settings *settings) {
     //const auto displays = Display::getDisplays();
     //settings->setDisplay(displays.at(1));
-    //settings->setWindowSize(1920, 1080);
-    //settings->setResizable(false);
-    //settings->setFullScreen();
+    settings->setWindowSize(1920, 1080);
+    settings->setResizable(false);
+    settings->setFullScreen();
     //settings->setHighDensityDisplayEnabled();
     //settings->setMultiTouchEnabled(true);
 }
