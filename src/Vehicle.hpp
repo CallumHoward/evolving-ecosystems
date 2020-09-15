@@ -9,7 +9,7 @@
 #include "chGlobals.hpp"                // Tick
 #include "cinder/gl/gl.h"               // vec2
 #include "cinder/Timeline.h"
-#include "cinder/Rand.h"                // randFloat
+#include "cinder/Rand.h"                // randFloat, randInt
 #include "cinder/CinderMath.h"          // M_PI, lmap, constrain
 #include "Particle.hpp"
 #include "Barrier.hpp"

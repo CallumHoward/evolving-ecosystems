@@ -7,6 +7,7 @@
 #include "cinder/Log.h"
 #include "cinder/osc/Osc.h"
 #include "cinder/Timeline.h"
+#include "cinder/Rand.h"                // randInt
 
 #include "CommsManager.hpp"
 
@@ -18,10 +19,10 @@ void CommsManager::setup(const std::function<void(int)>& updateCallback) {
     // is sending alternating 0s and 1s according to toggle object
     mReceiver.setListener("/beat",
             [&](const osc::Message &msg) {
-                auto midiChannel = msg[0].int32();  //TODO
+                /* auto midiChannel = msg[0].int32();  //TODO */
                 //CI_LOG_I(midiChannel);
 
-                mUpdateCallback(midiChannel);
+                mUpdateCallback(randInt(1, 4));
             });
 
     try {
